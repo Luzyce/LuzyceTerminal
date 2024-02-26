@@ -1,12 +1,12 @@
 #include <Arduino.h>
-#include "modules/networking/networking.hpp"
 
-Networking net;
+#include "modules/modules.hpp"
+
+Modules modules;
 
 void setup() {
   Serial.begin(115200);
-  net.init();
+  modules.init();
 }
 
-void loop() {
-}
+void loop() {}
