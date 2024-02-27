@@ -1,5 +1,8 @@
 #include "modules.hpp"
 
+Modules::Modules(Networking& net, Scanner& scan, MatrixKeypad& key, Mcp& mcp, Lcd& lcd, Nfc& nfc, Qr& qr)
+    : net(net), scan(scan), key(key), mcp(mcp), lcd(lcd), nfc(nfc), qr(qr) {}
+
 void Modules::init() {
   net.init();
 

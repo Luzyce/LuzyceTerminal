@@ -9,14 +9,15 @@
 #include "scanner/scanner.hpp"
 
 class Modules {
-  Networking net;
-  Scanner scan;
-  MatrixKeypad key;
-  Mcp mcp;
-  Lcd lcd;
-  Nfc nfc;
-  Qr qr;
+  Networking& net;
+  Scanner& scan;
+  MatrixKeypad& key;
+  Mcp& mcp;
+  Lcd& lcd;
+  Nfc& nfc;
+  Qr& qr;
 
  public:
+  Modules(Networking& net, Scanner& scan, MatrixKeypad& key, Mcp& mcp, Lcd& lcd, Nfc& nfc, Qr& qr);
   void init();
 };
