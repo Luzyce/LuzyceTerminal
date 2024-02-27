@@ -6,6 +6,7 @@
 #include "mcp/mcp.hpp"
 #include "lcd/lcd.hpp"
 #include "nfc/nfc.hpp"
+#include "qr/qr.hpp"
 
 class Modules {
   Networking net;
@@ -14,6 +15,7 @@ class Modules {
   Mcp mcp;
   Lcd lcd;
   Nfc nfc;
+  Qr qr;
 
  public:
   void init();

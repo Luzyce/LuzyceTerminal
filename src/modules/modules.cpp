@@ -14,4 +14,5 @@ void Modules::init() {
     mcp.init();
     lcd.init();
     nfc.init();
+    qr.init();
 }
