@@ -1,12 +1,12 @@
 #pragma once
 
-#include "networking/networking.hpp"
-#include "scanner/scanner.hpp"
 #include "keypad/keypad.hpp"
-#include "mcp/mcp.hpp"
 #include "lcd/lcd.hpp"
+#include "mcp/mcp.hpp"
+#include "networking/networking.hpp"
 #include "nfc/nfc.hpp"
 #include "qr/qr.hpp"
+#include "scanner/scanner.hpp"
 
 class Modules {
   Networking net;

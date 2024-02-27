@@ -6,7 +6,7 @@
 class Scanner {
   byte error, address;
   int nDevices;
-  
+
  public:
   int scan();
 };

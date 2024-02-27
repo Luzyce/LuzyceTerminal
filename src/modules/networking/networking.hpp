@@ -6,6 +6,6 @@ class Networking {
   WiFiManager wm;
   bool res;
 
-public:
+ public:
   void init();
 };
