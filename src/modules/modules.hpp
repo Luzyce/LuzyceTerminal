@@ -1,23 +1,27 @@
 #pragma once
 
-#include "keypad/keypad.hpp"
-#include "lcd/lcd.hpp"
-#include "mcp/mcp.hpp"
-#include "networking/networking.hpp"
-#include "nfc/nfc.hpp"
-#include "qr/qr.hpp"
-#include "scanner/scanner.hpp"
+#include <Arduino.h>
+#include <Wire.h>
+
+#include "keypad/iKeypad.hpp"
+#include "lcd/iLcd.hpp"
+#include "mcp/iMcp.hpp"
+#include "networking/iNetworking.hpp"
+#include "nfc/iNfc.hpp"
+#include "qr/iQr.hpp"
+#include "scanner/iScanner.hpp"
 
 class Modules {
-  Networking& net;
-  Scanner& scan;
-  MatrixKeypad& key;
-  Mcp& mcp;
-  Lcd& lcd;
-  Nfc& nfc;
-  Qr& qr;
+  INetworking& net;
+  IScanner& scan;
+  IKeypad& key;
+  IMcp& mcp;
+  ILcd& lcd;
+  INfc& nfc;
+  IQr& qr;
 
  public:
-  Modules(Networking& net, Scanner& scan, MatrixKeypad& key, Mcp& mcp, Lcd& lcd, Nfc& nfc, Qr& qr);
+  Modules(INetworking& net, IScanner& scan, IKeypad& key, IMcp& mcp, ILcd& lcd,
+          INfc& nfc, IQr& qr);
   void init();
 };

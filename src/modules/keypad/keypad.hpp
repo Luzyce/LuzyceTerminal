@@ -3,7 +3,9 @@
 #include <Arduino.h>
 #include <Keypad_I2C.h>
 
-class MatrixKeypad {
+#include "iKeypad.hpp"
+
+class MatrixKeypad : public IKeypad {
   Keypad_I2C keypad;
   static constexpr byte rowPins[4] = {0, 1, 2, 3};
   static constexpr byte colPins[4] = {4, 5, 6, 7};
@@ -14,5 +16,5 @@ class MatrixKeypad {
 
  public:
   MatrixKeypad();
-  void init();
+  void init() override;
 };

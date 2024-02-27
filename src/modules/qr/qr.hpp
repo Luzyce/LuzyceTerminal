@@ -2,7 +2,9 @@
 
 #include <Arduino.h>
 
-class Qr {
+#include "iQr.hpp"
+
+class Qr : public IQr {
  public:
-  void init();
+  void init() override;
 };

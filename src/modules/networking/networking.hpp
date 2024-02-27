@@ -2,10 +2,12 @@
 
 #include <WiFiManager.h>
 
-class Networking {
+#include "iNetworking.hpp"
+
+class Networking : public INetworking {
   WiFiManager wm;
   bool res;
 
  public:
-  void init();
+  void init() override;
 };

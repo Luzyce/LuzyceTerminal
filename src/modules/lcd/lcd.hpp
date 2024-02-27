@@ -2,10 +2,12 @@
 
 #include <LiquidCrystal_I2C.h>
 
-class Lcd {
+#include "iLcd.hpp"
+
+class Lcd : public ILcd {
   LiquidCrystal_I2C lcd;
 
  public:
   Lcd();
-  void init();
+  void init() override;
 };

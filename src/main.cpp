@@ -1,13 +1,14 @@
 #include <Arduino.h>
 
-#include "modules/modules.hpp"
-#include "modules/keypad/keypad.hpp"
-#include "modules/lcd/lcd.hpp"
-#include "modules/mcp/mcp.hpp"
 #include "modules/networking/networking.hpp"
+#include "modules/scanner/scanner.hpp"
+#include "modules/keypad/keypad.hpp"
+#include "modules/mcp/mcp.hpp"
+#include "modules/lcd/lcd.hpp"
 #include "modules/nfc/nfc.hpp"
 #include "modules/qr/qr.hpp"
-#include "modules/scanner/scanner.hpp"
+
+#include "modules/modules.hpp"
 
 Networking net;
 Scanner scan;
