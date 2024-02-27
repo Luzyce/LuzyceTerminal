@@ -12,4 +12,5 @@ void Modules::init() {
     
     key.init();
     mcp.init();
+    lcd.init();
 }
