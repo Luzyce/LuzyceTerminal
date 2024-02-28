@@ -1,13 +1,15 @@
 #include <Arduino.h>
 
-#include "modules/networking/networking.hpp"
-#include "modules/scanner/scanner.hpp"
+#include "terminal/networking/networking.hpp"
+#include "terminal/scanner/scanner.hpp"
+#include "terminal/error/error.hpp"
 
-#include "modules/modules.hpp"
+#include "terminal/modules.hpp"
 
 Networking net;
 Scanner scan;
-Modules modules(net, scan);
+Error error;
+Modules modules(net, scan, error);
 
 void setup() {
   Serial.begin(115200);
