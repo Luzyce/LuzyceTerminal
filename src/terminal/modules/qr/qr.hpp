@@ -2,7 +2,7 @@
 
 #include <Arduino.h>
 
-#include "IQr.hpp"
+#include "../../interfaces/IQr.hpp"
 
 class Qr : public IQr {
  public:

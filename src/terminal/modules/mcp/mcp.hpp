@@ -4,7 +4,7 @@
 #include <Arduino.h>
 #include <Wire.h>
 
-#include "IMcp.hpp"
+#include "../../interfaces/IMcp.hpp"
 
 #define LEDR 10
 #define LEDG 11

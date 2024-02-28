@@ -1,15 +1,15 @@
 #include <Arduino.h>
 
-#include "modules/networking/networking.hpp"
-#include "modules/scanner/scanner.hpp"
-#include "modules/keypad/keypad.hpp"
-#include "terminal/error/error.hpp"
-#include "modules/mcp/mcp.hpp"
-#include "modules/lcd/lcd.hpp"
-#include "modules/nfc/nfc.hpp"
-#include "modules/qr/qr.hpp"
+#include "terminal/modules/networking/networking.hpp"
+#include "terminal/modules/scanner/scanner.hpp"
+#include "terminal/modules/keypad/keypad.hpp"
+#include "terminal/modules/error/error.hpp"
+#include "terminal/modules/mcp/mcp.hpp"
+#include "terminal/modules/lcd/lcd.hpp"
+#include "terminal/modules/nfc/nfc.hpp"
+#include "terminal/modules/qr/qr.hpp"
 
-#include "modules/modules.hpp"
+#include "terminal/terminal.hpp"
 
 Networking net;
 Scanner scan;
@@ -20,11 +20,11 @@ Lcd lcd;
 Nfc nfc;
 Qr qr;
 
-Modules modules(net, scan, key, mcp, lcd, nfc, qr, error);
+Terminal terminal(net, scan, key, mcp, lcd, nfc, qr, error);
 
 void setup() {
   Serial.begin(115200);
-  modules.init();
+  terminal.init();
 }
 
 void loop() {}

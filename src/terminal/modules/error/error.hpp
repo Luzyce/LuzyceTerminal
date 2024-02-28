@@ -2,7 +2,7 @@
 
 #include <Arduino.h>
 
-#include "IError.hpp"
+#include "../../interfaces/IError.hpp"
 
 class Error : public IError {
 

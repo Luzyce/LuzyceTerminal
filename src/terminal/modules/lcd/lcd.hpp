@@ -2,7 +2,7 @@
 
 #include <LiquidCrystal_I2C.h>
 
-#include "ILcd.hpp"
+#include "../../interfaces/ILcd.hpp"
 
 class Lcd : public ILcd {
   LiquidCrystal_I2C lcd;

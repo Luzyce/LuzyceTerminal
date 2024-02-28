@@ -3,7 +3,7 @@
 #include <Arduino.h>
 #include <Keypad_I2C.h>
 
-#include "IKeypad.hpp"
+#include "../../interfaces/IKeypad.hpp"
 
 class MatrixKeypad : public IKeypad {
   Keypad_I2C keypad;
