@@ -3,6 +3,7 @@
 #include "modules/networking/networking.hpp"
 #include "modules/scanner/scanner.hpp"
 #include "modules/keypad/keypad.hpp"
+#include "terminal/error/error.hpp"
 #include "modules/mcp/mcp.hpp"
 #include "modules/lcd/lcd.hpp"
 #include "modules/nfc/nfc.hpp"
@@ -13,12 +14,13 @@
 Networking net;
 Scanner scan;
 MatrixKeypad key;
+Error error;
 Mcp mcp;
 Lcd lcd;
 Nfc nfc;
 Qr qr;
 
-Modules modules(net, scan, key, mcp, lcd, nfc, qr);
+Modules modules(net, scan, key, mcp, lcd, nfc, qr, error);
 
 void setup() {
   Serial.begin(115200);
