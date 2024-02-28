@@ -2,7 +2,7 @@
 
 #include <WiFiManager.h>
 
-#include "iNetworking.hpp"
+#include "INetworking.hpp"
 
 class Networking : public INetworking {
   WiFiManager wm;

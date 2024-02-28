@@ -2,7 +2,7 @@
 
 #include <rdm6300.h>
 
-#include "iNfc.hpp"
+#include "INfc.hpp"
 
 class Nfc : public INfc {
   Rdm6300 rdm6300;

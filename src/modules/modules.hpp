@@ -3,13 +3,13 @@
 #include <Arduino.h>
 #include <Wire.h>
 
-#include "keypad/iKeypad.hpp"
-#include "lcd/iLcd.hpp"
-#include "mcp/iMcp.hpp"
-#include "networking/iNetworking.hpp"
-#include "nfc/iNfc.hpp"
-#include "qr/iQr.hpp"
-#include "scanner/iScanner.hpp"
+#include "keypad/IKeypad.hpp"
+#include "lcd/ILcd.hpp"
+#include "mcp/IMcp.hpp"
+#include "networking/INetworking.hpp"
+#include "nfc/INfc.hpp"
+#include "qr/IQr.hpp"
+#include "scanner/IScanner.hpp"
 
 class Modules {
   INetworking& net;
