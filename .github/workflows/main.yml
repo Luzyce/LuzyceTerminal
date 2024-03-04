@@ -26,8 +26,8 @@ jobs:
 
       - name: Check build results
         run: |
-          exit $(docker logs paragonTestBuild 2>&1 | grep -iE "Error" | wc -l)
+          exit $(docker logs luzyceTerminalTestBuild 2>&1 | grep -iE "Error" | wc -l)
 
       - name: Check GTest results
         run: |
-          exit $(docker logs paragonTestBuild 2>&1 | grep Failed | grep "Test #" | wc -l)
+          exit $(docker logs luzyceTerminalTestBuild 2>&1 | grep Failed | grep "Test #" | wc -l)
