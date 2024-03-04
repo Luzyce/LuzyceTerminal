@@ -1,8 +1,5 @@
 #pragma once
 
-#include <Arduino.h>
-#include <Wire.h>
-
 #include "interfaces/IError.hpp"
 #include "interfaces/IKeypad.hpp"
 #include "interfaces/ILcd.hpp"
