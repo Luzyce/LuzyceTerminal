@@ -1,4 +1,4 @@
-name: PlatformIO build
+name: C/C++ CI
 
 on:
   push:
@@ -7,26 +7,27 @@ on:
   pull_request:
       branches:
       - main
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
   build:
-    # The type of runner that the job will run on
     runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
+    environment: LuzyceTerminal
     steps:
-    - uses: actions/checkout@v2
-      with:
-        submodules: 'true'
-    - name: Set up Python
-      uses: actions/setup-python@v1
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install platformio
-    # It is important to first install the libraries before compiling, since otherwise compilation might fail to find the just-installed libraries
-    - name: Install platformIO libraries
-      run: pio lib install
-    - name: Run PlatformIO
-      run: platformio run
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Determine Branch
+        id: determine_branch
+        run: echo "::set-output name=branch::${{ github.head_ref || vars.BRANCH }}"
+
+      - name: Run Docker container
+        run: |
+          docker run --entrypoint appbuild.sh -e "BRANCH=${{ steps.determine_branch.outputs.branch }}" --name luzyceTerminalTestBuild xdanielooo/luzyceterminal:${{ vars.DOCKER_IMAGE_VERSION }}
+        continue-on-error: true
+
+      - name: Check build results
+        run: |
+          exit $(docker logs paragonTestBuild 2>&1 | grep -iE "Error" | wc -l)
+
+      - name: Check GTest results
+        run: |
+          exit $(docker logs paragonTestBuild 2>&1 | grep Failed | grep "Test #" | wc -l)
