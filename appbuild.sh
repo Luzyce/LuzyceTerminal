@@ -1,5 +1,7 @@
 #!/bin/bash
 
+curl -fsSL https://raw.githubusercontent.com/platformio/platformio-core/develop/platformio/assets/system/99-platformio-udev.rules | tee /etc/udev/rules.d/99-platformio-udev.rules
+
 if [ -d "LuzyceTerminal" ]; then
     rm -rf LuzyceTerminal
 fi
