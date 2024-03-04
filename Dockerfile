@@ -9,7 +9,8 @@ RUN apt update && \
     apt install -y \
     python3 \
     python3-pip \
-    git
+    git \
+    curl
 
 RUN pip3 install platformio
 
