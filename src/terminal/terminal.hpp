@@ -1,6 +1,6 @@
 #pragma once
 
-#include "interfaces/IError.hpp"
+#include "interfaces/IConsole.hpp"
 #include "interfaces/IKeypad.hpp"
 #include "interfaces/ILcd.hpp"
 #include "interfaces/IMcp.hpp"
@@ -17,10 +17,10 @@ class Terminal {
   ILcd& lcd;
   INfc& nfc;
   IQr& qr;
-  IError& err;
+  IConsole& cons;
 
  public:
   Terminal(INetworking& net, IScanner& scan, IKeypad& key, IMcp& mcp, ILcd& lcd,
-          INfc& nfc, IQr& qr, IError& err);
+          INfc& nfc, IQr& qr, IConsole& cons);
   void init();
 };
