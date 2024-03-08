@@ -9,9 +9,9 @@
 #include "interfaces/IQr.hpp"
 #include "interfaces/IScanner.hpp"
 
-#if defined(ARDUINO)
+#if defined(esp32)
 #include <Wire.h>
-#else
+#elif defined(utest)
 #include "interfaces/FakeWire.hpp"
 FakeWire Wire;
 #endif
