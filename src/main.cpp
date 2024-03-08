@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <Wire.h>
 
 #include "terminal/modules/networking/networking.hpp"
 #include "terminal/modules/scanner/scanner.hpp"
@@ -20,7 +21,7 @@ Lcd lcd;
 Nfc nfc;
 Qr qr;
 
-Terminal terminal(net, scan, key, mcp, lcd, nfc, qr, cons);
+Terminal terminal(net, scan, key, mcp, lcd, nfc, qr, cons, Wire);
 
 void setup() {
   Serial.begin(115200);

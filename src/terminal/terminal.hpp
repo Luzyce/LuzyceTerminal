@@ -8,6 +8,7 @@
 #include "interfaces/INfc.hpp"
 #include "interfaces/IQr.hpp"
 #include "interfaces/IScanner.hpp"
+#include <Wire.h>
 
 class Terminal {
   INetworking& net;
@@ -18,9 +19,10 @@ class Terminal {
   INfc& nfc;
   IQr& qr;
   IConsole& cons;
+  TwoWire& wire;
 
  public:
   Terminal(INetworking& net, IScanner& scan, IKeypad& key, IMcp& mcp, ILcd& lcd,
-          INfc& nfc, IQr& qr, IConsole& cons);
+          INfc& nfc, IQr& qr, IConsole& cons, TwoWire& wire);
   void init();
 };

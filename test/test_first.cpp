@@ -1,5 +1,6 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
+#include <Wire.h>
 
 #include "terminal/interfaces/IError.hpp"
 #include "terminal/interfaces/IKeypad.hpp"
@@ -52,6 +53,11 @@ class MockNfc : public INfc {
 class MockQr : public IQr {
  public:
   MOCK_METHOD(void, init, (), (override));
+};
+
+class MockWire : public TwoWire {
+ public:
+  MOCK_METHOD(bool, begin, (), (override));
 };
 
 using ::testing::Return;
