@@ -1,8 +1,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
-#include <Wire.h>
 
-#include "terminal/interfaces/IError.hpp"
+#include "terminal/interfaces/IConsole.hpp"
 #include "terminal/interfaces/IKeypad.hpp"
 #include "terminal/interfaces/ILcd.hpp"
 #include "terminal/interfaces/IMcp.hpp"
@@ -25,9 +24,9 @@ class MockScanner : public IScanner {
   MOCK_METHOD(int, scan, (), (override));
 };
 
-class MockError : public IError {
+class MockConsole : public IConsole {
  public:
-  MOCK_METHOD(void, error, (int code), (override));
+  MOCK_METHOD(void, print, (std::string data), (override));
 };
 
 class MockKeypad : public IKeypad {
@@ -55,17 +54,12 @@ class MockQr : public IQr {
   MOCK_METHOD(void, init, (), (override));
 };
 
-class MockWire : public TwoWire {
- public:
-  MOCK_METHOD(bool, begin, (), (override));
-};
-
 using ::testing::Return;
 
 TEST(ModulesTest, InitCallsScanAndReturnsThree) {
   MockNetworking mockNet;
   MockScanner mockScan;
-  MockError mockError;
+  MockConsole mockConsole;
   MockKeypad mockKeypad;
   MockLcd mockLcd;
   MockMcp mockMcp;
@@ -75,7 +69,7 @@ TEST(ModulesTest, InitCallsScanAndReturnsThree) {
   EXPECT_CALL(mockScan, scan())
       .WillOnce(Return(3));
 
-  Terminal terminal(mockNet, mockScan, mockKeypad, mockMcp, mockLcd, mockNfc, mockQr, mockError);
+  Terminal terminal(mockNet, mockScan, mockKeypad, mockMcp, mockLcd, mockNfc, mockQr, mockConsole);
   terminal.init();
 }
 

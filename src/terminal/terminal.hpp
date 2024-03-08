@@ -8,7 +8,13 @@
 #include "interfaces/INfc.hpp"
 #include "interfaces/IQr.hpp"
 #include "interfaces/IScanner.hpp"
+
+#if defined(ARDUINO)
 #include <Wire.h>
+#else
+#include "interfaces/FakeWire.hpp"
+FakeWire Wire;
+#endif
 
 class Terminal {
   INetworking& net;
@@ -19,10 +25,9 @@ class Terminal {
   INfc& nfc;
   IQr& qr;
   IConsole& cons;
-  TwoWire& wire;
 
  public:
   Terminal(INetworking& net, IScanner& scan, IKeypad& key, IMcp& mcp, ILcd& lcd,
-          INfc& nfc, IQr& qr, IConsole& cons, TwoWire& wire);
+          INfc& nfc, IQr& qr, IConsole& cons);
   void init();
 };
