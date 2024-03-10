@@ -17,6 +17,7 @@
 class MockNetworking : public INetworking {
  public:
   MOCK_METHOD(void, init, (), (override));
+  MOCK_METHOD(requestAnswer, request, (std::string subpage, std::string data), (override));
 };
 
 class MockScanner : public IScanner {
@@ -37,6 +38,8 @@ class MockKeypad : public IKeypad {
 class MockLcd : public ILcd {
  public:
   MOCK_METHOD(void, init, (), (override));
+  MOCK_METHOD(void, print, (uint8_t x, uint8_t y, std::string data), (override));
+  MOCK_METHOD(void, clear, (), (override));
 };
 
 class MockMcp : public IMcp {
@@ -47,6 +50,7 @@ class MockMcp : public IMcp {
 class MockNfc : public INfc {
  public:
   MOCK_METHOD(void, init, (), (override));
+  MOCK_METHOD(std::string, scan, (), (override));
 };
 
 class MockQr : public IQr {
