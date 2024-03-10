@@ -19,9 +19,17 @@ void Terminal::init() {
 void Terminal::process() {
     lcd.print(0,0, "Zaloguj sie");
     lcd.print(0,1, "Uzyj swojej karty");
+
+    //NFC
     std::string nfcTag = nfc.scan();
     cons.print("NFC TAG: " + nfcTag);
-    requestAnswer answer = net.request("/api/login", "{\"login\":\"" + nfcTag + "\"}");
+
+    JsonDocument doc;
+    doc["login"] = nfcTag;
+    std::string SerializedNfc;
+    serializeJson(doc, SerializedNfc);
+
+    requestAnswer answer = net.request("login", SerializedNfc);
     cons.print("STATUS CODE: " + std::to_string(answer.statusCode));
     cons.print("DATA: " + answer.data);
     lcd.clear();

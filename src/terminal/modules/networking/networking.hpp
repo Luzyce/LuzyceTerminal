@@ -12,6 +12,7 @@ class Networking : public INetworking {
   HTTPClient https;
   WiFiManager wm;
   bool res;
+  std::string cookie;
 
  public:
   void init() override;

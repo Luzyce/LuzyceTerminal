@@ -1,5 +1,7 @@
 #pragma once
 
+#include <ArduinoJson.h>
+
 #include "interfaces/IConsole.hpp"
 #include "interfaces/IKeypad.hpp"
 #include "interfaces/ILcd.hpp"
