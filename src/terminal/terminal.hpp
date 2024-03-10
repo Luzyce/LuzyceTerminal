@@ -27,6 +27,7 @@ class Terminal {
   INfc& nfc;
   IQr& qr;
   IConsole& cons;
+  JsonDocument doc;
 
  public:
   Terminal(INetworking& net, IScanner& scan, IKeypad& key, IMcp& mcp, ILcd& lcd,

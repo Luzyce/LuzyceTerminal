@@ -24,13 +24,17 @@ void Terminal::process() {
     std::string nfcTag = nfc.scan();
     cons.print("NFC TAG: " + nfcTag);
 
-    JsonDocument doc;
     doc["login"] = nfcTag;
     std::string SerializedNfc;
     serializeJson(doc, SerializedNfc);
 
     requestAnswer answer = net.request("login", SerializedNfc);
-    cons.print("STATUS CODE: " + std::to_string(answer.statusCode));
-    cons.print("DATA: " + answer.data);
+    cons.print("STATUS CODE: " + std::to_string(answer.statusCode) + " DATA: " + answer.data);
+
+    deserializeJson(doc, answer.data);
+    std::string dispName = doc["Data"]["displayName"];
+
     lcd.clear();
+    lcd.print(0,0, "Zalogowano jako");
+    lcd.print(0,1, dispName);
 }
