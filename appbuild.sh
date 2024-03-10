@@ -8,4 +8,7 @@ fi
 
 git clone https://github.com/Luzyce/LuzyceTerminal.git -b $BRANCH
 cd LuzyceTerminal
+
+sleep 10
+
 pio test -e utest
