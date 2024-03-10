@@ -30,4 +30,5 @@ class Terminal {
   Terminal(INetworking& net, IScanner& scan, IKeypad& key, IMcp& mcp, ILcd& lcd,
           INfc& nfc, IQr& qr, IConsole& cons);
   void init();
+  void process();
 };

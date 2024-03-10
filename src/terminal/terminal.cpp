@@ -15,3 +15,7 @@ void Terminal::init() {
     qr.init();
     cons.print("DEVICES INITIALIZED");
 }
+
+void Terminal::process() {
+    
+}

@@ -1,14 +1,13 @@
 #include <Arduino.h>
 
-#include "terminal/modules/networking/networking.hpp"
-#include "terminal/modules/scanner/scanner.hpp"
-#include "terminal/modules/keypad/keypad.hpp"
 #include "terminal/modules/console/console.hpp"
-#include "terminal/modules/mcp/mcp.hpp"
+#include "terminal/modules/keypad/keypad.hpp"
 #include "terminal/modules/lcd/lcd.hpp"
+#include "terminal/modules/mcp/mcp.hpp"
+#include "terminal/modules/networking/networking.hpp"
 #include "terminal/modules/nfc/nfc.hpp"
 #include "terminal/modules/qr/qr.hpp"
-
+#include "terminal/modules/scanner/scanner.hpp"
 #include "terminal/terminal.hpp"
 
 Networking net;
@@ -27,4 +26,4 @@ void setup() {
   terminal.init();
 }
 
-void loop() {}
+void loop() { terminal.process(); }

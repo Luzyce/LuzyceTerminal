@@ -7,3 +7,8 @@ void Lcd::init() {
   lcd.backlight();
   lcd.clear();
 }
+
+void Lcd::print(uint8_t x, uint8_t y, std::string data) {
+  lcd.setCursor(x, y);
+  lcd.print(String(data.c_str()));
+}
