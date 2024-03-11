@@ -12,3 +12,23 @@ void Qr::init() {
   Serial2.write("RDC000"); 
   delay(250);
 }
+
+std::string Qr::scan() {
+  fullScan = "";
+  Serial2.write("RDC010");
+  while (1) {
+    if (Serial2.available())
+    {
+      while (Serial2.available())
+      {
+        char input = Serial2.read();
+        if (input != 13 && (isDigit(input) || input == '/' || isAlpha(input))) {
+          fullScan += input;
+        } else if (input == 13) {
+          Serial2.write("RDC000");
+          return fullScan;
+        }
+      }
+    }
+  }
+}

@@ -15,4 +15,5 @@ class Mcp : public IMcp {
 
  public:
   void init() override;
+  void statusLed(int led) override;
 };

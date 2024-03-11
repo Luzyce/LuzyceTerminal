@@ -21,8 +21,10 @@ void Terminal::process() {
     lcd.print(0,1, "Uzyj swojej karty");
 
     //NFC
+    mcp.statusLed(LEDG);
     std::string nfcTag = nfc.scan();
     cons.print("NFC TAG: " + nfcTag);
+    mcp.statusLed(LEDB);
 
     doc["login"] = nfcTag;
     std::string SerializedNfc;
@@ -31,10 +33,24 @@ void Terminal::process() {
     requestAnswer answer = net.request("login", SerializedNfc);
     cons.print("STATUS CODE: " + std::to_string(answer.statusCode) + " DATA: " + answer.data);
 
-    deserializeJson(doc, answer.data);
-    std::string dispName = doc["Data"]["displayName"];
+    if (answer.statusCode == 200) {
+        deserializeJson(doc, answer.data);
+        std::string dispName = doc["Data"]["displayName"];
 
-    lcd.clear();
-    lcd.print(0,0, "Zalogowano jako");
-    lcd.print(0,1, dispName);
+        lcd.clear();
+        lcd.print(0,0, "Zalogowano jako");
+        lcd.print(0,1, dispName);
+        mcp.statusLed(LEDG);
+    } else {
+        lcd.print(0,2, "Sprobuj ponownie");
+        mcp.statusLed(LEDR);
+        delay(3000);
+        mcp.statusLed(LEDG);
+        return;
+    }
+
+    lcd.print(0,2, "Zeskanuj dokument ");
+    std::string doc = qr.scan();
+    cons.print("DOC NUM: " + doc);
+    mcp.statusLed(LEDB);
 }

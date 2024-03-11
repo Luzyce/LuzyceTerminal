@@ -8,3 +8,9 @@ void Mcp::init() {
   mcp.pinMode(LEDG, OUTPUT);
   mcp.pinMode(LEDB, OUTPUT);
 }
+
+void Mcp::statusLed(int led) {
+  mcp.digitalWrite(LEDR, (led == LEDR) ? HIGH : LOW);
+  mcp.digitalWrite(LEDG, (led == LEDG) ? HIGH : LOW);
+  mcp.digitalWrite(LEDB, (led == LEDB) ? HIGH : LOW);
+}
