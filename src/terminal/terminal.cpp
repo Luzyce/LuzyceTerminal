@@ -27,15 +27,17 @@ void Terminal::process() {
     mcp.statusLed(LEDB);
 
     doc["login"] = nfcTag;
-    std::string SerializedNfc;
-    serializeJson(doc, SerializedNfc);
+    std::string serializedNfc;
+    serializeJson(doc, serializedNfc);
+    doc.clear();
 
-    requestAnswer answer = net.request("login", SerializedNfc);
+    requestAnswer answer = net.request("login", serializedNfc);
     cons.print("STATUS CODE: " + std::to_string(answer.statusCode) + " DATA: " + answer.data);
 
     if (answer.statusCode == 200) {
         deserializeJson(doc, answer.data);
         std::string dispName = doc["Data"]["displayName"];
+        doc.clear();
 
         lcd.clear();
         lcd.print(0,0, "Zalogowano jako");
@@ -50,7 +52,40 @@ void Terminal::process() {
     }
 
     lcd.print(0,2, "Zeskanuj dokument ");
-    std::string doc = qr.scan();
-    cons.print("DOC NUM: " + doc);
+    std::string document = qr.scan();
+    cons.print("DOC NUM: " + document);
     mcp.statusLed(LEDB);
+
+    doc["dokument"] = document;
+    std::string serializedDoc;
+    serializeJson(doc, serializedDoc);
+    doc.clear();
+
+    answer = net.request("otworzDokument", serializedDoc);
+    cons.print("STATUS CODE: " + std::to_string(answer.statusCode) + " DATA: " + answer.data);
+
+    if (answer.statusCode == 200) {
+        deserializeJson(doc, answer.data);
+        lcd.clear();
+        lcd.print(0,0, "Dok: " + document);
+        lcd.print(0,1, "Dobrych:   " + std::to_string(doc["Data"]["Dobrych"].as<int>()));
+        lcd.print(0,2, "Zlych:     " + std::to_string(doc["Data"]["Zlych"].as<int>()));
+        lcd.print(0,3, "DoPoprawy: " + std::to_string(doc["Data"]["DoPoprawy"].as<int>()));
+
+        doc.clear();
+        mcp.statusLed(LEDG);
+    } else {
+        lcd.print(0,2,"                    ");
+        lcd.print(0,2, "Sprobuj ponownie");
+        mcp.statusLed(LEDR);
+        delay(3000);
+        mcp.statusLed(LEDG);
+        lcd.print(0,0,"                    ");
+        lcd.print(0,1,"                    ");
+        return;
+    }
+
+    while(1) {
+        yield();
+    }
 }
