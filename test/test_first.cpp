@@ -77,6 +77,7 @@ TEST(ModulesTest, InitCallsScanAndReturnsThree) {
 
   Terminal terminal(mockNet, mockScan, mockKeypad, mockMcp, mockLcd, mockNfc, mockQr, mockConsole);
   terminal.init();
+  terminal.process();
 }
 
 TEST(DummyTest, ShouldPass) { EXPECT_EQ(1, 1); }
