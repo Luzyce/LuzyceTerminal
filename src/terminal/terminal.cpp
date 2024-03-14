@@ -86,6 +86,28 @@ void Terminal::process() {
     }
 
     while(1) {
+        readBtnAnswer button = mcp.readBtn();
+        cons.print("TYP: " + std::string(1, button.type) + " STAN: " + button.pole.c_str());
+
+        doc["typ"] = std::string(1, button.type);
+        doc["pole"] = button.pole;
+        doc["terminal"] = "1";
+        std::string serializedBtn;
+        serializeJson(doc, serializedBtn);
+        doc.clear();
+
+        answer = net.request("operacja", serializedBtn);
+        cons.print("STATUS CODE: " + std::to_string(answer.statusCode) + " DATA: " + answer.data);
+        if (answer.statusCode == 200) {
+            deserializeJson(doc, answer.data);
+            lcd.clear();
+            lcd.print(0,1, "Dobrych:   " + std::to_string(doc["Data"]["Dobrych"].as<int>()));
+            lcd.print(0,2, "Zlych:     " + std::to_string(doc["Data"]["Zlych"].as<int>()));
+            lcd.print(0,3, "DoPoprawy: " + std::to_string(doc["Data"]["DoPoprawy"].as<int>()));
+
+            doc.clear();
+            mcp.statusLed(LEDG);
+        }
         yield();
     }
 }

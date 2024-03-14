@@ -2,12 +2,10 @@
 
 #include <string>
 
-struct requestAnswer
-{
+struct requestAnswer {
   int statusCode;
   std::string data;
 };
-
 
 class INetworking {
  public:
