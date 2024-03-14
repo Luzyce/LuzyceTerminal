@@ -11,5 +11,6 @@ class Lcd : public ILcd {
   Lcd();
   void init() override;
   void print(uint8_t x, uint8_t y, std::string data) override;
+  void clearLine(uint8_t y) override;
   void clear() override;
 };

@@ -75,13 +75,13 @@ void Terminal::process() {
         doc.clear();
         mcp.statusLed(LEDG);
     } else {
-        lcd.print(0,2,"                    ");
+        lcd.clearLine(2);
         lcd.print(0,2, "Sprobuj ponownie");
         mcp.statusLed(LEDR);
         delay(3000);
         mcp.statusLed(LEDG);
-        lcd.print(0,0,"                    ");
-        lcd.print(0,1,"                    ");
+        lcd.clearLine(0);
+        lcd.clearLine(1);
         return;
     }
 
