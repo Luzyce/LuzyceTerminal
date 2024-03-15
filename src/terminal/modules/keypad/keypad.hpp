@@ -17,4 +17,5 @@ class MatrixKeypad : public IKeypad {
  public:
   MatrixKeypad();
   void init() override;
+  char read() override;
 };

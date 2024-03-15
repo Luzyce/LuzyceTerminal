@@ -30,6 +30,8 @@ class Terminal {
   IConsole& cons;
   JsonDocument doc;
 
+  void printDocumentInfo();
+
  public:
   Terminal(INetworking& net, IScanner& scan, IKeypad& key, IMcp& mcp, ILcd& lcd,
           INfc& nfc, IQr& qr, IConsole& cons);

@@ -9,3 +9,13 @@ MatrixKeypad::MatrixKeypad()
              const_cast<byte*>(colPins), 4, 4, 0x20, PCF8574) {}
 
 void MatrixKeypad::init() { keypad.begin(makeKeymap(keys)); }
+
+char MatrixKeypad::read() {
+  while (1) {
+    char key = keypad.getKey();
+
+    if (key) {
+        return key;
+    } 
+  }
+}
