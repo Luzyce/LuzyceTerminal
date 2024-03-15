@@ -65,6 +65,7 @@ void Terminal::process() {
     return;
   }
 
+  // SKANER QR
   lcd.print(0, 2, "Zeskanuj dokument ");
   std::string document = qr.scan();
   cons.print("DOC NUM: " + document);
@@ -98,6 +99,7 @@ void Terminal::process() {
     return;
   }
 
+  // BUTTONY
   while (1) {
     readBtnAnswer button = mcp.readBtn();
     cons.print("TYP: " + std::string(1, button.type) +
@@ -119,7 +121,7 @@ void Terminal::process() {
         codeCharacter = key.read();
         cons.print(std::string(1, codeCharacter));
         mcp.statusLed(LEDB);
-        
+
         if (isDigit(codeCharacter)) {
           fullCode += codeCharacter;
           lcd.print(10 + fullCode.length(), 0, std::string(1, codeCharacter));
