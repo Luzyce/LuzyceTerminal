@@ -16,7 +16,7 @@ void Qr::init() {
 std::string Qr::scan() {
   fullScan = "";
   Serial2.write("RDC010");
-  while (1) {
+  while (true) {
     if (Serial2.available())
     {
       while (Serial2.available())

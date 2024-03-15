@@ -16,7 +16,7 @@ void Mcp::statusLed(int led) {
 }
 
 readBtnAnswer Mcp::readBtn() {
-  while (1) {
+  while (true) {
     for (uint8_t btn = 0; btn < 7; btn++) {
       if (!mcp.digitalRead(btn)) {
         while (!mcp.digitalRead(btn)) {

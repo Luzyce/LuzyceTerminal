@@ -100,7 +100,7 @@ void Terminal::process() {
   }
 
   // BUTTONY
-  while (1) {
+  while (true) {
     readBtnAnswer button = mcp.readBtn();
     cons.print("TYP: " + std::string(1, button.type) +
                " STAN: " + button.pole.c_str());
@@ -116,7 +116,7 @@ void Terminal::process() {
       lcd.print(0, 0, "Kod Bledu: ");
       char codeCharacter;
       std::string fullCode;
-      while (1) {
+      while (true) {
         mcp.statusLed(LEDG);
         codeCharacter = key.read();
         cons.print(std::string(1, codeCharacter));

@@ -11,7 +11,7 @@ MatrixKeypad::MatrixKeypad()
 void MatrixKeypad::init() { keypad.begin(makeKeymap(keys)); }
 
 char MatrixKeypad::read() {
-  while (1) {
+  while (true) {
     char key = keypad.getKey();
 
     if (key) {
