@@ -33,6 +33,7 @@ class MockConsole : public IConsole {
 class MockKeypad : public IKeypad {
  public:
   MOCK_METHOD(void, init, (), (override));
+  MOCK_METHOD(char, read, (), (override));
 };
 
 class MockLcd : public ILcd {
@@ -40,12 +41,14 @@ class MockLcd : public ILcd {
   MOCK_METHOD(void, init, (), (override));
   MOCK_METHOD(void, print, (uint8_t x, uint8_t y, std::string data), (override));
   MOCK_METHOD(void, clear, (), (override));
+  MOCK_METHOD(void, clearLine, (uint8_t y), (override));
 };
 
 class MockMcp : public IMcp {
  public:
   MOCK_METHOD(void, init, (), (override));
   MOCK_METHOD(void, statusLed, (int led), (override));
+  MOCK_METHOD(readBtnAnswer, readBtn, (), (override));
 };
 
 class MockNfc : public INfc {

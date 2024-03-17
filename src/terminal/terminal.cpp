@@ -122,7 +122,7 @@ void Terminal::process() {
         cons.print(std::string(1, codeCharacter));
         mcp.statusLed(LEDB);
 
-        if (isDigit(codeCharacter)) {
+        if (std::isdigit(codeCharacter)) {
           fullCode += codeCharacter;
           lcd.print(10 + fullCode.length(), 0, std::string(1, codeCharacter));
         } else if (codeCharacter == '#') {
