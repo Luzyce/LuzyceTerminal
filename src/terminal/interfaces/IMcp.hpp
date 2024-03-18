@@ -14,5 +14,6 @@ class IMcp {
   virtual void init() = 0;
   virtual void statusLed(int led) = 0;
   virtual readBtnAnswer readBtn() = 0;
+  virtual void resetBtn() = 0;
   virtual ~IMcp() {}
 };

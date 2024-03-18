@@ -11,6 +11,22 @@ Terminal::Terminal(INetworking& net, IScanner& scan, IKeypad& key, IMcp& mcp,
       qr(qr),
       cons(cons) {}
 
+void Reset(void* pvParameters) {
+    IMcp* mcp = static_cast<IMcp*>(pvParameters);
+    if (mcp == nullptr) {
+        Serial.println("IMcp pointer is null!");
+        return;
+    }
+
+    Serial.print("Reset running on core ");
+    Serial.println(xPortGetCoreID());
+
+    mcp->resetBtn();
+    mcp->statusLed(LEDR);
+    ESP.restart();
+}
+
+
 void Terminal::init() {
   net.init();
   Wire.begin();
@@ -20,6 +36,16 @@ void Terminal::init() {
   lcd.init();
   nfc.init();
   qr.init();
+
+  xTaskCreatePinnedToCore(
+             Reset,
+             "Reset",
+             10000,
+             &mcp,
+             1,
+             NULL,
+             1);
+
   cons.print("DEVICES INITIALIZED");
 }
 

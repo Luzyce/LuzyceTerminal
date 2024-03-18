@@ -17,4 +17,5 @@ class Mcp : public IMcp {
   void init() override;
   void statusLed(int led) override;
   readBtnAnswer readBtn() override;
+  void resetBtn() override;
 };

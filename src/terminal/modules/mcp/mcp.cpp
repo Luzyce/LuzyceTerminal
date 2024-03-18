@@ -58,3 +58,11 @@ readBtnAnswer Mcp::readBtn() {
     }
   }
 }
+
+void Mcp::resetBtn() {
+  while (1) {
+    delay(500);
+    if (!mcp.digitalRead(6) && !mcp.digitalRead(7))
+      return;
+  }
+}
