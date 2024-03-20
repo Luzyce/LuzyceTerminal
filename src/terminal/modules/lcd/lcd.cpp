@@ -18,6 +18,4 @@ void Lcd::clearLine(uint8_t y) {
   lcd.print("                    ");
 }
 
-void Lcd::clear() {
-  lcd.clear();
-}
+void Lcd::clear() { lcd.clear(); }

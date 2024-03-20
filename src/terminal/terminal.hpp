@@ -14,8 +14,8 @@
 #if defined(esp32)
 #include <Wire.h>
 #elif defined(utest)
-#include "interfaces/FakeWire.hpp"
 #include "interfaces/FakeArduino.hpp"
+#include "interfaces/FakeWire.hpp"
 FakeWire Wire;
 #endif
 
@@ -34,7 +34,7 @@ class Terminal {
 
  public:
   Terminal(INetworking& net, IScanner& scan, IKeypad& key, IMcp& mcp, ILcd& lcd,
-          INfc& nfc, IQr& qr, IConsole& cons);
+           INfc& nfc, IQr& qr, IConsole& cons);
   void init();
   void process();
 

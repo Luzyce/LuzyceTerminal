@@ -15,7 +15,7 @@ char MatrixKeypad::read() {
     char key = keypad.getKey();
 
     if (key) {
-        return key;
-    } 
+      return key;
+    }
   }
 }

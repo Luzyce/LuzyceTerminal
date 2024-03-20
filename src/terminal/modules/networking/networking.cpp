@@ -28,8 +28,7 @@ requestAnswer Networking::request(std::string subpage, std::string data) {
     if (httpCode > 0) {
       String payload = https.getString();
 
-      if (subpage == "login")
-        cookie = https.header("Set-Cookie").c_str();
+      if (subpage == "login") cookie = https.header("Set-Cookie").c_str();
 
       requestAnswer answer;
 

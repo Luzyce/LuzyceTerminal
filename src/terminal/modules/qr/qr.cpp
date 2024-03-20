@@ -5,11 +5,11 @@ void Qr::init() {
   delay(250);
   Serial2.write("RAB160");
   delay(250);
-  Serial2.write("RDM020"); 
+  Serial2.write("RDM020");
   delay(250);
-  Serial2.write("RDC010"); 
+  Serial2.write("RDC010");
   delay(1000);
-  Serial2.write("RDC000"); 
+  Serial2.write("RDC000");
   delay(250);
 }
 
@@ -26,10 +26,8 @@ std::string Qr::scan() {
       previousMillis = currentMillis;
     }
 
-    if (Serial2.available())
-    {
-      while (Serial2.available())
-      {
+    if (Serial2.available()) {
+      while (Serial2.available()) {
         char input = Serial2.read();
         if (input != 13 && (isDigit(input) || input == '/' || isAlpha(input))) {
           fullScan += input;
