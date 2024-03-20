@@ -143,10 +143,13 @@ void Terminal::process() {
         cons.print(std::string(1, codeCharacter));
         mcp.statusLed(LEDB);
 
-        if (std::isdigit(codeCharacter)) {
+        if (std::isdigit(codeCharacter) && fullCode.size() < 2) {
           fullCode += codeCharacter;
           lcd.print(10 + fullCode.length(), 0, std::string(1, codeCharacter));
-        } else if (codeCharacter == '#') {
+        } else if (codeCharacter == '*' && fullCode.size() > 0) {
+          fullCode.pop_back();
+          lcd.print(11 + fullCode.length(), 0, " ");
+        } else if (codeCharacter == '#' && fullCode.size() == 2) {
           doc["kodbledu"] = fullCode;
           break;
         }
