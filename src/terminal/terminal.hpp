@@ -37,6 +37,4 @@ class Terminal {
            INfc& nfc, IQr& qr, IConsole& cons);
   void init();
   void process();
-
-  int status;
 };

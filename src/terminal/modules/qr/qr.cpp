@@ -16,14 +16,19 @@ void Qr::init() {
 std::string Qr::scan() {
   fullScan = "";
   Serial2.write("RDC010");
-  int64_t previousMillis = 0;
+  int64_t previousRestart = 0;
+  int64_t timeForTimeout = (esp_timer_get_time() / 1000ULL) + 30000;
   while (true) {
     int64_t currentMillis = (esp_timer_get_time() / 1000ULL);
-    if (currentMillis - previousMillis >= 10000) {
+    if (currentMillis - previousRestart >= 10000) {
       Serial2.write("RDC000");
       delay(500);
       Serial2.write("RDC010");
-      previousMillis = currentMillis;
+      previousRestart = currentMillis;
+    } else if (currentMillis >= timeForTimeout) {
+      timeout = true;
+      Serial2.write("RDC000");
+      while (1);
     }
 
     if (Serial2.available()) {

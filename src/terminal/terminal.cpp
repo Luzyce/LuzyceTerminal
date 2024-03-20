@@ -18,12 +18,27 @@ void Reset(void* pvParameters) {
     return;
   }
 
-  Serial.print("Reset running on core ");
-  Serial.println(xPortGetCoreID());
-
   mcp->resetBtn();
   mcp->statusLed(LEDR);
   ESP.restart();
+}
+
+void Timeout(void* pvParameters) {
+  IQr* qr = static_cast<IQr*>(reinterpret_cast<void**>(pvParameters)[0]);
+  IMcp* mcp = static_cast<IMcp*>(reinterpret_cast<void**>(pvParameters)[1]);
+
+  if (qr == nullptr || mcp == nullptr) {
+    Serial.println("IQr or IMcp pointer is null!");
+    return;
+  }
+
+  while (1) {
+    delay(500);
+    if (qr->timeout) {
+      mcp->statusLed(LEDR);
+      ESP.restart();
+    }
+  }
 }
 
 void Terminal::init() {
@@ -36,7 +51,9 @@ void Terminal::init() {
   nfc.init();
   qr.init();
 
+  void* params[2] = {&qr, &mcp};
   xTaskCreatePinnedToCore(Reset, "Reset", 10000, &mcp, 1, NULL, 1);
+  xTaskCreatePinnedToCore(Timeout, "Timeout", 10000, params, 1, NULL, 1);
 
   cons.print("DEVICES INITIALIZED");
 }
