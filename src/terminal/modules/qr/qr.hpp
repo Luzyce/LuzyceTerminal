@@ -6,8 +6,9 @@
 
 class Qr : public IQr {
   std::string fullScan;
+  ScanAnswer answer;
 
  public:
   void init() override;
-  std::string scan() override;
+  ScanAnswer scan() override;
 };

@@ -13,7 +13,7 @@ void Qr::init() {
   delay(250);
 }
 
-std::string Qr::scan() {
+ScanAnswer Qr::scan() {
   fullScan = "";
   Serial2.write("RDC010");
   int64_t previousRestart = 0;
@@ -26,9 +26,12 @@ std::string Qr::scan() {
       Serial2.write("RDC010");
       previousRestart = currentMillis;
     } else if (currentMillis >= timeForTimeout) {
-      timeout = true;
       Serial2.write("RDC000");
-      while (1);
+
+      answer.status = 1;
+      answer.scan = "";
+
+      return answer;
     }
 
     if (Serial2.available()) {
@@ -38,7 +41,11 @@ std::string Qr::scan() {
           fullScan += input;
         } else if (input == 13) {
           Serial2.write("RDC000");
-          return fullScan;
+
+          answer.status = 0;
+          answer.scan = fullScan;
+
+          return answer;
         }
       }
     }

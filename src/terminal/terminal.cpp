@@ -23,24 +23,6 @@ void Reset(void* pvParameters) {
   ESP.restart();
 }
 
-void Timeout(void* pvParameters) {
-  IQr* qr = static_cast<IQr*>(reinterpret_cast<void**>(pvParameters)[0]);
-  IMcp* mcp = static_cast<IMcp*>(reinterpret_cast<void**>(pvParameters)[1]);
-
-  if (qr == nullptr || mcp == nullptr) {
-    Serial.println("IQr or IMcp pointer is null!");
-    return;
-  }
-
-  while (1) {
-    delay(500);
-    if (qr->timeout) {
-      mcp->statusLed(LEDR);
-      ESP.restart();
-    }
-  }
-}
-
 void Terminal::init() {
   net.init();
   Wire.begin();
@@ -51,9 +33,7 @@ void Terminal::init() {
   nfc.init();
   qr.init();
 
-  void* params[2] = {&qr, &mcp};
   xTaskCreatePinnedToCore(Reset, "Reset", 10000, &mcp, 1, NULL, 1);
-  xTaskCreatePinnedToCore(Timeout, "Timeout", 10000, params, 1, NULL, 1);
 
   cons.print("DEVICES INITIALIZED");
 }
@@ -82,12 +62,12 @@ void Terminal::process() {
   serializeJson(doc, serializedNfc);
   doc.clear();
 
-  requestAnswer answer = net.request("login", serializedNfc);
-  cons.print("STATUS CODE: " + std::to_string(answer.statusCode) +
-             " DATA: " + answer.data);
+  RequestAnswer requestAnswer = net.request("login", serializedNfc);
+  cons.print("STATUS CODE: " + std::to_string(requestAnswer.statusCode) +
+             " DATA: " + requestAnswer.data);
 
-  if (answer.statusCode == 200) {
-    deserializeJson(doc, answer.data);
+  if (requestAnswer.statusCode == 200) {
+    deserializeJson(doc, requestAnswer.data);
     std::string dispName = doc["Data"]["displayName"];
     doc.clear();
 
@@ -105,7 +85,19 @@ void Terminal::process() {
 
   // SKANER QR
   lcd.print(0, 2, "Zeskanuj dokument ");
-  std::string document = qr.scan();
+  ScanAnswer scanAnswer = qr.scan();
+
+  if (scanAnswer.status > 0) {
+    mcp.statusLed(LEDR);
+    lcd.clear();
+    lcd.print(0, 0, "Przekroczono limit");
+    lcd.print(0, 1, "czasu");
+    lcd.print(0, 2, "Sprobuj ponownie");
+    delay(3000);
+    ESP.restart();
+  }
+
+  std::string document = scanAnswer.scan;
   cons.print("DOC NUM: " + document);
   mcp.statusLed(LEDB);
 
@@ -114,12 +106,12 @@ void Terminal::process() {
   serializeJson(doc, serializedDoc);
   doc.clear();
 
-  answer = net.request("otworzDokument", serializedDoc);
-  cons.print("STATUS CODE: " + std::to_string(answer.statusCode) +
-             " DATA: " + answer.data);
+  requestAnswer = net.request("otworzDokument", serializedDoc);
+  cons.print("STATUS CODE: " + std::to_string(requestAnswer.statusCode) +
+             " DATA: " + requestAnswer.data);
 
-  if (answer.statusCode == 200) {
-    deserializeJson(doc, answer.data);
+  if (requestAnswer.statusCode == 200) {
+    deserializeJson(doc, requestAnswer.data);
     lcd.clear();
     lcd.print(0, 0, "Dok: " + document);
     printDocumentInfo();
@@ -180,11 +172,11 @@ void Terminal::process() {
     serializeJson(doc, serializedBtn);
     doc.clear();
 
-    answer = net.request("operacja", serializedBtn);
-    cons.print("STATUS CODE: " + std::to_string(answer.statusCode) +
-               " DATA: " + answer.data);
-    if (answer.statusCode == 200) {
-      deserializeJson(doc, answer.data);
+    requestAnswer = net.request("operacja", serializedBtn);
+    cons.print("STATUS CODE: " + std::to_string(requestAnswer.statusCode) +
+               " DATA: " + requestAnswer.data);
+    if (requestAnswer.statusCode == 200) {
+      deserializeJson(doc, requestAnswer.data);
       lcd.clear();
       printDocumentInfo();
 

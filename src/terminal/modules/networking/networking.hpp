@@ -16,5 +16,5 @@ class Networking : public INetworking {
 
  public:
   void init() override;
-  requestAnswer request(std::string subpage, std::string data) override;
+  RequestAnswer request(std::string subpage, std::string data) override;
 };
