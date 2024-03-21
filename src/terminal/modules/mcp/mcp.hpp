@@ -12,6 +12,7 @@
 
 class Mcp : public IMcp {
   Adafruit_MCP23X17 mcp;
+  readBtnAnswer answer;
 
  public:
   void init() override;

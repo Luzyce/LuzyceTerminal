@@ -132,6 +132,17 @@ void Terminal::process() {
   // BUTTONY
   while (true) {
     readBtnAnswer button = mcp.readBtn();
+
+    if (button.status > 0) {
+      mcp.statusLed(LEDR);
+      lcd.clear();
+      lcd.print(0, 0, "Przekroczono limit");
+      lcd.print(0, 1, "czasu");
+      lcd.print(0, 2, "Sprobuj ponownie");
+      delay(3000);
+      ESP.restart();
+    }
+
     cons.print("TYP: " + std::string(1, button.type) +
                " STAN: " + button.pole.c_str());
     mcp.statusLed(LEDB);

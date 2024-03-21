@@ -5,6 +5,7 @@
 #define LEDB 12
 
 struct readBtnAnswer {
+  int status;
   char type;
   std::string pole;
 };
