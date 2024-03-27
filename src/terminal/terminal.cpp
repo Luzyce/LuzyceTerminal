@@ -90,10 +90,7 @@ void Terminal::process() {
   if (scanAnswer.status > 0) {
     mcp.statusLed(LEDR);
     lcd.clear();
-    lcd.print(0, 0, "Przekroczono limit");
-    lcd.print(0, 1, "czasu");
-    lcd.print(0, 2, "Sprobuj ponownie");
-    delay(3000);
+    lcd.print(0, 2, "Przekroczono czas");
     return;
   }
 
@@ -136,10 +133,7 @@ void Terminal::process() {
     if (button.status > 0) {
       mcp.statusLed(LEDR);
       lcd.clear();
-      lcd.print(0, 0, "Przekroczono limit");
-      lcd.print(0, 1, "czasu");
-      lcd.print(0, 2, "Sprobuj ponownie");
-      delay(3000);
+      lcd.print(0, 2, "Przekroczono czas");
       return;
     }
 
