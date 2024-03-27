@@ -49,6 +49,7 @@ class MockMcp : public IMcp {
   MOCK_METHOD(void, init, (), (override));
   MOCK_METHOD(void, statusLed, (int led), (override));
   MOCK_METHOD(readBtnAnswer, readBtn, (), (override));
+  MOCK_METHOD(void, resetBtn, (), (override));
 };
 
 class MockNfc : public INfc {
@@ -60,7 +61,7 @@ class MockNfc : public INfc {
 class MockQr : public IQr {
  public:
   MOCK_METHOD(void, init, (), (override));
-  MOCK_METHOD(std::string, scan, (), (override));
+  MOCK_METHOD(ScanAnswer, scan, (), (override));
 };
 
 using ::testing::Return;
