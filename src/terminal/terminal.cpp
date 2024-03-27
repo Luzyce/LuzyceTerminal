@@ -13,14 +13,16 @@ Terminal::Terminal(INetworking& net, IScanner& scan, IKeypad& key, IMcp& mcp,
 
 void Reset(void* pvParameters) {
   IMcp* mcp = static_cast<IMcp*>(pvParameters);
+  IConsole* cons = static_cast<IConsole*>(pvParameters);
+  EspClass* ESP = static_cast<EspClass*>(pvParameters);
   if (mcp == nullptr) {
-    Serial.println("IMcp pointer is null!");
+    cons->print("IMcp pointer is null!");
     return;
   }
 
   mcp->resetBtn();
   mcp->statusLed(LEDR);
-  ESP.restart();
+  ESP->restart();
 }
 
 void Terminal::init() {
@@ -33,7 +35,8 @@ void Terminal::init() {
   nfc.init();
   qr.init();
 
-  xTaskCreatePinnedToCore(Reset, "Reset", 10000, &mcp, 1, NULL, 1);
+  void* params[3] = {&mcp, &cons, &ESP};
+  xTaskCreatePinnedToCore(Reset, "Reset", 10000, params, 1, NULL, 1);
 
   cons.print("DEVICES INITIALIZED");
 }
@@ -62,7 +65,7 @@ void Terminal::process() {
   serializeJson(doc, serializedNfc);
   doc.clear();
 
-  RequestAnswer requestAnswer = net.request("login", serializedNfc);
+  requestAnswer requestAnswer = net.request("login", serializedNfc);
   cons.print("STATUS CODE: " + std::to_string(requestAnswer.statusCode) +
              " DATA: " + requestAnswer.data);
 
@@ -94,7 +97,7 @@ void Terminal::process() {
     lcd.print(0, 1, "czasu");
     lcd.print(0, 2, "Sprobuj ponownie");
     delay(3000);
-    ESP.restart();
+    return;
   }
 
   std::string document = scanAnswer.scan;
@@ -140,7 +143,7 @@ void Terminal::process() {
       lcd.print(0, 1, "czasu");
       lcd.print(0, 2, "Sprobuj ponownie");
       delay(3000);
-      ESP.restart();
+      return;
     }
 
     cons.print("TYP: " + std::string(1, button.type) +

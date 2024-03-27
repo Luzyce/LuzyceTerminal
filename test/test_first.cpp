@@ -1,6 +1,8 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include "terminal/interfaces/FakeArduino.hpp"
+#include "terminal/interfaces/FakeWire.hpp"
 #include "terminal/interfaces/IConsole.hpp"
 #include "terminal/interfaces/IKeypad.hpp"
 #include "terminal/interfaces/ILcd.hpp"

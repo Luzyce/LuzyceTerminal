@@ -15,6 +15,7 @@
 #include <Wire.h>
 #elif defined(utest)
 #include "interfaces/FakeArduino.hpp"
+EspClass ESP;
 #include "interfaces/FakeWire.hpp"
 FakeWire Wire;
 #endif

@@ -2,7 +2,7 @@
 
 #include <string>
 
-struct RequestAnswer {
+struct requestAnswer {
   int statusCode;
   std::string data;
 };
@@ -10,6 +10,6 @@ struct RequestAnswer {
 class INetworking {
  public:
   virtual void init() = 0;
-  virtual RequestAnswer request(std::string subpage, std::string data) = 0;
+  virtual requestAnswer request(std::string subpage, std::string data) = 0;
   virtual ~INetworking() {}
 };
