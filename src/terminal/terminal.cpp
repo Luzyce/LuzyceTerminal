@@ -12,16 +12,13 @@ Terminal::Terminal(INetworking& net, IScanner& scan, IKeypad& key, IMcp& mcp,
       cons(cons) {}
 
 void Reset(void* pvParameters) {
-  IMcp* mcp = static_cast<IMcp*>(pvParameters);
-  IConsole* cons = static_cast<IConsole*>(pvParameters);
-  EspClass* ESP = static_cast<EspClass*>(pvParameters);
-  if (mcp == nullptr) {
-    cons->print("IMcp pointer is null!");
-    return;
-  }
+  IMcp* mcp = static_cast<IMcp*>(reinterpret_cast<void**>(pvParameters)[0]);
+  IConsole* cons = static_cast<IConsole*>(reinterpret_cast<void**>(pvParameters)[1]);
+  EspClass* ESP = static_cast<EspClass*>(reinterpret_cast<void**>(pvParameters)[2]);
 
   mcp->resetBtn();
   mcp->statusLed(LEDR);
+  cons->print("Button Reset Pressed");
   ESP->restart();
 }
 
