@@ -11,7 +11,7 @@ void Networking::init() {
   }
 }
 
-RequestAnswer Networking::request(std::string subpage, std::string data) {
+requestAnswer Networking::request(std::string subpage, std::string data) {
   const char *headerKeys[] = {"date", "Set-Cookie"};
   client->setInsecure();
   if (https.begin(*client, "https://daniel-phs.wroc.ovh/api/" +
@@ -30,7 +30,7 @@ RequestAnswer Networking::request(std::string subpage, std::string data) {
 
       if (subpage == "login") cookie = https.header("Set-Cookie").c_str();
 
-      RequestAnswer answer;
+      requestAnswer answer;
 
       answer.statusCode = httpCode;
       answer.data = payload.c_str();
