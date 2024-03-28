@@ -32,7 +32,6 @@ readBtnAnswer Mcp::readBtn() {
       if (!mcp.digitalRead(btn)) {
         while (!mcp.digitalRead(btn))
           delay(30);
-
         switch (btn) {
           case 0:
             answer.type = '-';
