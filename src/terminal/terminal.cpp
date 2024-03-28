@@ -12,30 +12,23 @@ Terminal::Terminal(INetworking& net, IScanner& scan, IKeypad& key, IMcp& mcp,
       cons(cons) {}
 
 void Reset(void* pvParameters) {
-  IMcp* mcp = static_cast<IMcp*>(reinterpret_cast<void**>(pvParameters)[0]);
-  IConsole* cons = static_cast<IConsole*>(reinterpret_cast<void**>(pvParameters)[1]);
-  EspClass* ESP = static_cast<EspClass*>(reinterpret_cast<void**>(pvParameters)[2]);
+  Terminal* terminal =
+      static_cast<Terminal*>(reinterpret_cast<void**>(pvParameters)[0]);
+  IMcp* mcp = static_cast<IMcp*>(reinterpret_cast<void**>(pvParameters)[1]);
+  IConsole* cons =
+      static_cast<IConsole*>(reinterpret_cast<void**>(pvParameters)[2]);
+  ILcd* lcd = static_cast<ILcd*>(reinterpret_cast<void**>(pvParameters)[3]);
+  EspClass* ESP =
+      static_cast<EspClass*>(reinterpret_cast<void**>(pvParameters)[4]);
 
   mcp->resetBtn();
+  lcd->clear();
+  lcd->print(0, 0, "Resetuje terminal");
   mcp->statusLed(LEDR);
+  terminal->buzzer(false);
   cons->print("Button Reset Pressed");
+  delay(300);
   ESP->restart();
-}
-
-void Terminal::init() {
-  net.init();
-  Wire.begin();
-  cons.print("CONNECTED DEVICES: " + std::to_string(scan.scan()));
-  key.init();
-  mcp.init();
-  lcd.init();
-  nfc.init();
-  qr.init();
-
-  void* params[3] = {&mcp, &cons, &ESP};
-  xTaskCreatePinnedToCore(Reset, "Reset", 10000, params, 1, NULL, 1);
-
-  cons.print("DEVICES INITIALIZED");
 }
 
 void Terminal::printDocumentInfo() {
@@ -45,6 +38,37 @@ void Terminal::printDocumentInfo() {
             "Zlych:     " + std::to_string(doc["Data"]["Zlych"].as<int>()));
   lcd.print(0, 3,
             "DoPoprawy: " + std::to_string(doc["Data"]["DoPoprawy"].as<int>()));
+}
+
+void Terminal::buzzer(bool state) {
+  if (state) {
+    tone(BUZZER, 100, 100);
+    tone(BUZZER, 125, 100);
+    tone(BUZZER, 150, 100);
+  } else {
+    tone(BUZZER, 150, 100);
+    tone(BUZZER, 125, 100);
+    tone(BUZZER, 100, 100);
+  }
+}
+
+void Terminal::init() {
+  net.init();
+  Wire.begin();
+  ledcSetup(0, 5000, 8);
+  ledcAttachPin(BUZZER, 0);
+  cons.print("CONNECTED DEVICES: " + std::to_string(scan.scan()));
+  key.init();
+  mcp.init();
+  lcd.init();
+  nfc.init();
+  qr.init();
+
+  void* params[5] = {this, &mcp, &cons, &lcd, &ESP};
+  xTaskCreatePinnedToCore(Reset, "Reset", 10000, params, 1, NULL, 1);
+
+  buzzer(true);
+  cons.print("DEVICES INITIALIZED");
 }
 
 void Terminal::process() {
@@ -74,9 +98,13 @@ void Terminal::process() {
     lcd.clear();
     lcd.print(0, 0, "Zalogowano jako");
     lcd.print(0, 1, dispName);
+
+    buzzer(true);
     mcp.statusLed(LEDG);
   } else {
     lcd.print(0, 2, "Sprobuj ponownie");
+
+    buzzer(false);
     mcp.statusLed(LEDR);
     delay(3000);
     mcp.statusLed(LEDG);
@@ -88,6 +116,7 @@ void Terminal::process() {
   ScanAnswer scanAnswer = qr.scan();
 
   if (scanAnswer.status > 0) {
+    buzzer(false);
     mcp.statusLed(LEDR);
     lcd.clear();
     lcd.print(0, 2, "Przekroczono czas");
@@ -112,12 +141,14 @@ void Terminal::process() {
     lcd.clear();
     lcd.print(0, 0, "Dok: " + document);
     printDocumentInfo();
-
     doc.clear();
+
+    buzzer(true);
     mcp.statusLed(LEDG);
   } else {
     lcd.clearLine(2);
     lcd.print(0, 2, "Sprobuj ponownie");
+    buzzer(false);
     mcp.statusLed(LEDR);
     delay(3000);
     mcp.statusLed(LEDG);
@@ -131,6 +162,7 @@ void Terminal::process() {
     readBtnAnswer button = mcp.readBtn();
 
     if (button.status > 0) {
+      buzzer(false);
       mcp.statusLed(LEDR);
       lcd.clear();
       lcd.print(0, 2, "Przekroczono czas");
@@ -144,6 +176,7 @@ void Terminal::process() {
     if (button.pole == "KoniecKwita") {
       lcd.clear();
       lcd.print(0, 3, "Koniec kwita");
+      buzzer(true);
       mcp.statusLed(LEDG);
       return;
     } else if (button.type == '+' && button.pole == "Zlych") {
@@ -152,6 +185,7 @@ void Terminal::process() {
       char codeCharacter;
       std::string fullCode;
       while (true) {
+        buzzer(true);
         mcp.statusLed(LEDG);
         codeCharacter = key.read();
         cons.print(std::string(1, codeCharacter));
@@ -186,6 +220,7 @@ void Terminal::process() {
       printDocumentInfo();
 
       doc.clear();
+      buzzer(true);
       mcp.statusLed(LEDG);
     }
   }
