@@ -9,4 +9,5 @@ class Nfc : public INfc {
 
  public:
   void init() override;
+  std::string scan() override;
 };

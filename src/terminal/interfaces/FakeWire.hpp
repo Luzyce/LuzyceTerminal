@@ -2,9 +2,7 @@
 
 class FakeWire {
  public:
-  bool begin() {
-    return true;
-  };
+  bool begin() { return true; };
   ~FakeWire() {}
 };
 

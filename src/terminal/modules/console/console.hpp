@@ -5,7 +5,6 @@
 #include "../../interfaces/IConsole.hpp"
 
 class Console : public IConsole {
-
  public:
   void print(std::string data) override;
 };
