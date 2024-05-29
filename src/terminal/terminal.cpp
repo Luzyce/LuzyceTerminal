@@ -81,7 +81,7 @@ void Terminal::process() {
   cons.print("NFC TAG: " + nfcTag);
   mcp.statusLed(LEDB);
 
-  doc["login"] = nfcTag;
+  doc["hash"] = nfcTag;
   std::string serializedNfc;
   serializeJson(doc, serializedNfc);
   doc.clear();
@@ -92,7 +92,7 @@ void Terminal::process() {
 
   if (requestAnswer.statusCode == 200) {
     deserializeJson(doc, requestAnswer.data);
-    std::string dispName = doc["Data"]["displayName"];
+    std::string dispName = std::string((const char*)doc["result"]["name"]) + " " + std::string((const char*)doc["result"]["lastName"]);
     doc.clear();
 
     lcd.clear();

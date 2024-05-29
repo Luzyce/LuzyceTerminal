@@ -4,6 +4,7 @@
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
 #include <WiFiManager.h>
+#include <ArduinoJson.h>
 
 #include "../../interfaces/INetworking.hpp"
 

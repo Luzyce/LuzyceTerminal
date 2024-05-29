@@ -12,23 +12,25 @@ void Networking::init() {
 }
 
 requestAnswer Networking::request(std::string subpage, std::string data) {
-  const char *headerKeys[] = {"date", "Set-Cookie"};
   client->setInsecure();
-  if (https.begin(*client, "https://daniel-phs.wroc.ovh/api/" +
+  if (https.begin(*client, "https://phsapp.getin.ovh/api/" +
                                String(subpage.c_str()))) {
     https.addHeader("Content-Type", "application/json");
     if (subpage == "login") {
       cookie = "";
-      https.collectHeaders(headerKeys, 2);
     } else {
       https.addHeader("Cookie", String(cookie.c_str()));
     }
-
+    Serial.println(data.c_str());
     int httpCode = https.POST(String(data.c_str()));
     if (httpCode > 0) {
       String payload = https.getString();
 
-      if (subpage == "login") cookie = https.header("Set-Cookie").c_str();
+      if (subpage == "login") {
+        JsonDocument doc;
+        deserializeJson(doc, payload);
+        std::string cookie = doc["token"];
+      }
 
       requestAnswer answer;
 
