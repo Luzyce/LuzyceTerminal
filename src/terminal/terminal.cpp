@@ -31,15 +31,6 @@ void Reset(void* pvParameters) {
   ESP->restart();
 }
 
-void Terminal::printDocumentInfo() {
-  lcd.print(0, 1,
-            "Dobrych:   " + std::to_string(doc["Data"]["Dobrych"].as<int>()));
-  lcd.print(0, 2,
-            "Zlych:     " + std::to_string(doc["Data"]["Zlych"].as<int>()));
-  lcd.print(0, 3,
-            "DoPoprawy: " + std::to_string(doc["Data"]["DoPoprawy"].as<int>()));
-}
-
 void Terminal::buzzer(bool state) {
   if (state) {
     tone(BUZZER, 100, 100);
@@ -81,7 +72,8 @@ void Terminal::process() {
   cons.print("NFC TAG: " + nfcTag);
   mcp.statusLed(LEDB);
 
-  doc["login"] = nfcTag;
+  doc["hash"] = nfcTag;
+  doc["ipAddress"] = net.getIp();
   std::string serializedNfc;
   serializeJson(doc, serializedNfc);
   doc.clear();
@@ -92,7 +84,7 @@ void Terminal::process() {
 
   if (requestAnswer.statusCode == 200) {
     deserializeJson(doc, requestAnswer.data);
-    std::string dispName = doc["Data"]["displayName"];
+    std::string dispName = std::string((const char*)doc["result"]["name"]) + " " + std::string((const char*)doc["result"]["lastName"]);
     doc.clear();
 
     lcd.clear();
@@ -127,12 +119,12 @@ void Terminal::process() {
   cons.print("DOC NUM: " + document);
   mcp.statusLed(LEDB);
 
-  doc["dokument"] = document;
+  doc["number"] = document;
   std::string serializedDoc;
   serializeJson(doc, serializedDoc);
   doc.clear();
 
-  requestAnswer = net.request("otworzDokument", serializedDoc);
+  requestAnswer = net.request("document/getByNumber", serializedDoc);
   cons.print("STATUS CODE: " + std::to_string(requestAnswer.statusCode) +
              " DATA: " + requestAnswer.data);
 
@@ -140,7 +132,13 @@ void Terminal::process() {
     deserializeJson(doc, requestAnswer.data);
     lcd.clear();
     lcd.print(0, 0, "Dok: " + document);
-    printDocumentInfo();
+    lcd.print(0, 1,
+              "Dobrych:   " + std::to_string(doc["documentPosition"][0]["quantityNetto"].as<int>()));
+    lcd.print(0, 2,
+              "Zlych:     " + std::to_string(doc["documentPosition"][0]["quantityLoss"].as<int>()));
+    lcd.print(0, 3,
+              "DoPoprawy: " + std::to_string(doc["documentPosition"][0]["quantityToImprove"].as<int>()));
+    documentId = std::to_string(doc["documentPosition"][0]["id"].as<int>());
     doc.clear();
 
     buzzer(true);
@@ -176,6 +174,9 @@ void Terminal::process() {
     if (button.pole == "KoniecKwita") {
       lcd.clear();
       lcd.print(0, 3, "Koniec kwita");
+      auto response = net.request("document/closeDocument/" + documentId, "");
+      cons.print("STATUS CODE: " + std::to_string(response.statusCode) +
+                 " DATA: " + response.data);
       buzzer(true);
       mcp.statusLed(LEDG);
       return;
@@ -198,30 +199,43 @@ void Terminal::process() {
           fullCode.pop_back();
           lcd.print(11 + fullCode.length(), 0, " ");
         } else if (codeCharacter == '#' && fullCode.size() == 2) {
-          doc["kodbledu"] = fullCode;
+          doc["errorCode"] = fullCode;
           break;
         }
       }
     }
 
-    doc["typ"] = std::string(1, button.type);
-    doc["pole"] = button.pole;
-    doc["terminal"] = "1";
+    doc["type"] = std::string(1, button.type);
+    doc["field"] = button.pole;
     std::string serializedBtn;
     serializeJson(doc, serializedBtn);
     doc.clear();
 
-    requestAnswer = net.request("operacja", serializedBtn);
+    requestAnswer = net.request("document/updateDocumentPositionOnKwit/" + documentId, serializedBtn);
     cons.print("STATUS CODE: " + std::to_string(requestAnswer.statusCode) +
                " DATA: " + requestAnswer.data);
     if (requestAnswer.statusCode == 200) {
       deserializeJson(doc, requestAnswer.data);
       lcd.clear();
-      printDocumentInfo();
+      lcd.print(0, 1,
+          "Dobrych:   " + std::to_string(doc["quantityNetto"].as<int>()));
+      lcd.print(0, 2,
+                "Zlych:     " + std::to_string(doc["quantityLoss"].as<int>()));
+      lcd.print(0, 3,
+                "DoPoprawy: " + std::to_string(doc["quantityToImprove"].as<int>()));
 
       doc.clear();
       buzzer(true);
       mcp.statusLed(LEDG);
+    } else {
+      lcd.clearLine(0);
+      lcd.print(0, 0, "Sprobuj ponownie");
+      buzzer(false);
+      mcp.statusLed(LEDR);
+      delay(3000);
+      mcp.statusLed(LEDG);
+      lcd.clearLine(0);
     }
+  
   }
 }
