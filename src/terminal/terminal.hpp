@@ -33,7 +33,7 @@ class Terminal {
   IConsole& cons;
   JsonDocument doc;
 
-  void printDocumentInfo();
+  std::string documentId;
 
  public:
   Terminal(INetworking& net, IScanner& scan, IKeypad& key, IMcp& mcp, ILcd& lcd,

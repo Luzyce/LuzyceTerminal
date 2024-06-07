@@ -11,25 +11,48 @@ void Networking::init() {
   }
 }
 
+std::string Networking::getIp() {
+  return WiFi.localIP().toString().c_str();
+}
+
 requestAnswer Networking::request(std::string subpage, std::string data) {
   client->setInsecure();
-  if (https.begin(*client, "https://phsapp.getin.ovh/api/" +
-                               String(subpage.c_str()))) {
+  auto url = "https://phsapp.getin.ovh/api/" + String(subpage.c_str());
+
+  Serial.println("Request: " + url);
+
+  if (https.begin(*client, url)) {
     https.addHeader("Content-Type", "application/json");
     if (subpage == "login") {
       cookie = "";
+      Serial.println("No cookie");
     } else {
-      https.addHeader("Cookie", String(cookie.c_str()));
+      https.addHeader("Authorization", "Bearer " + String(cookie.c_str()));
+      Serial.println("Authorization:" + String(cookie.c_str()));
     }
-    Serial.println(data.c_str());
-    int httpCode = https.POST(String(data.c_str()));
+
+    Serial.println("Sending data:" + String(data.c_str()));
+
+    int httpCode;
+    if (data == "") {
+      httpCode = https.GET();
+      Serial.println("GET");
+    } else if (subpage.find("updateDocumentPositionOnKwit") != std::string::npos) { 
+      httpCode = https.PUT(data.c_str());
+      Serial.println("PUT");
+    } else {
+      httpCode = https.POST(String(data.c_str()));
+      Serial.println("POST");
+    }
+    
     if (httpCode > 0) {
+      Serial.println("HTTP Status Code: " + String(httpCode));
       String payload = https.getString();
 
       if (subpage == "login") {
         JsonDocument doc;
         deserializeJson(doc, payload);
-        std::string cookie = doc["token"];
+        cookie = (const char*)doc["token"];
       }
 
       requestAnswer answer;
@@ -37,7 +60,11 @@ requestAnswer Networking::request(std::string subpage, std::string data) {
       answer.statusCode = httpCode;
       answer.data = payload.c_str();
 
+      https.end();
       return answer;
+    } else {
+      https.end();
+      Serial.println("Error on HTTP request: " + String(httpCode));
     }
   }
   return {};
