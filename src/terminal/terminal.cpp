@@ -12,23 +12,21 @@ Terminal::Terminal(INetworking& net, IScanner& scan, IKeypad& key, IMcp& mcp,
       cons(cons) {}
 
 void Reset(void* pvParameters) {
-  Terminal* terminal =
-      static_cast<Terminal*>(reinterpret_cast<void**>(pvParameters)[0]);
-  IMcp* mcp = static_cast<IMcp*>(reinterpret_cast<void**>(pvParameters)[1]);
-  IConsole* cons =
+  auto* mcp = static_cast<IMcp*>(reinterpret_cast<void**>(pvParameters)[1]);
+  auto* cons =
       static_cast<IConsole*>(reinterpret_cast<void**>(pvParameters)[2]);
-  ILcd* lcd = static_cast<ILcd*>(reinterpret_cast<void**>(pvParameters)[3]);
-  EspClass* ESP =
+  auto* lcd = static_cast<ILcd*>(reinterpret_cast<void**>(pvParameters)[3]);
+  auto* esp =
       static_cast<EspClass*>(reinterpret_cast<void**>(pvParameters)[4]);
 
   mcp->resetBtn();
   lcd->clear();
   lcd->print(0, 0, "Resetuje terminal");
   mcp->statusLed(LEDR);
-  terminal->buzzer(false);
+  Terminal::buzzer(false);
   cons->print("Button Reset Pressed");
   delay(300);
-  ESP->restart();
+  esp->restart();
 }
 
 void Terminal::buzzer(bool state) {
@@ -56,7 +54,7 @@ void Terminal::init() {
   qr.init();
 
   void* params[5] = {this, &mcp, &cons, &lcd, &ESP};
-  xTaskCreatePinnedToCore(Reset, "Reset", 10000, params, 1, NULL, 1);
+  xTaskCreatePinnedToCore(Reset, "Reset", 10000, params, 1, nullptr, 1);
 
   buzzer(true);
   cons.print("DEVICES INITIALIZED");
@@ -84,12 +82,12 @@ void Terminal::process() {
 
   if (requestAnswer.statusCode == 200) {
     deserializeJson(doc, requestAnswer.data);
-    std::string dispName = std::string((const char*)doc["result"]["name"]) + " " + std::string((const char*)doc["result"]["lastName"]);
+    std::string displayName = std::string((const char*)doc["result"]["name"]) + " " + std::string((const char*)doc["result"]["lastName"]);
     doc.clear();
 
     lcd.clear();
     lcd.print(0, 0, "Zalogowano jako");
-    lcd.print(0, 1, dispName);
+    lcd.print(0, 1, displayName);
 
     buzzer(true);
     mcp.statusLed(LEDG);
@@ -133,12 +131,12 @@ void Terminal::process() {
     lcd.clear();
     lcd.print(0, 0, "Dok: " + document);
     lcd.print(0, 1,
-              "Dobrych:   " + std::to_string(doc["documentPosition"][0]["quantityNetto"].as<int>()));
+              "Dobrych:   " + std::to_string(doc["documentPositions"][0]["quantityNetto"].as<int>()));
     lcd.print(0, 2,
-              "Zlych:     " + std::to_string(doc["documentPosition"][0]["quantityLoss"].as<int>()));
+              "Zlych:     " + std::to_string(doc["documentPositions"][0]["quantityLoss"].as<int>()));
     lcd.print(0, 3,
-              "DoPoprawy: " + std::to_string(doc["documentPosition"][0]["quantityToImprove"].as<int>()));
-    documentId = std::to_string(doc["documentPosition"][0]["id"].as<int>());
+              "DoPoprawy: " + std::to_string(doc["documentPositions"][0]["quantityToImprove"].as<int>()));
+    documentId = std::to_string(doc["id"].as<int>());
     doc.clear();
 
     buzzer(true);
@@ -164,11 +162,14 @@ void Terminal::process() {
       mcp.statusLed(LEDR);
       lcd.clear();
       lcd.print(0, 2, "Przekroczono czas");
+      auto response = net.request("document/closeDocument/" + documentId, "");
+      cons.print("STATUS CODE: " + std::to_string(response.statusCode) +
+                 " DATA: " + response.data);
       return;
     }
 
     cons.print("TYP: " + std::string(1, button.type) +
-               " STAN: " + button.pole.c_str());
+               " STAN: " + button.pole);
     mcp.statusLed(LEDB);
 
     if (button.pole == "KoniecKwita") {
@@ -195,7 +196,7 @@ void Terminal::process() {
         if (std::isdigit(codeCharacter) && fullCode.size() < 2) {
           fullCode += codeCharacter;
           lcd.print(10 + fullCode.length(), 0, std::string(1, codeCharacter));
-        } else if (codeCharacter == '*' && fullCode.size() > 0) {
+        } else if (codeCharacter == '*' && !fullCode.empty()) {
           fullCode.pop_back();
           lcd.print(11 + fullCode.length(), 0, " ");
         } else if (codeCharacter == '#' && fullCode.size() == 2) {
@@ -218,7 +219,7 @@ void Terminal::process() {
       deserializeJson(doc, requestAnswer.data);
       lcd.clear();
       lcd.print(0, 1,
-          "Dobrych:   " + std::to_string(doc["quantityNetto"].as<int>()));
+                "Dobrych:   " + std::to_string(doc["quantityNetto"].as<int>()));
       lcd.print(0, 2,
                 "Zlych:     " + std::to_string(doc["quantityLoss"].as<int>()));
       lcd.print(0, 3,

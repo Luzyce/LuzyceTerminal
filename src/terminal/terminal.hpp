@@ -38,7 +38,7 @@ class Terminal {
  public:
   Terminal(INetworking& net, IScanner& scan, IKeypad& key, IMcp& mcp, ILcd& lcd,
            INfc& nfc, IQr& qr, IConsole& cons);
-  void buzzer(bool state);
+  static void buzzer(bool state);
   void init();
   void process();
 };
