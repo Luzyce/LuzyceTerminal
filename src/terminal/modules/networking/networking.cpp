@@ -49,7 +49,7 @@ requestAnswer Networking::request(std::string subpage, std::string data) {
       Serial.println("HTTP Status Code: " + String(httpCode));
       String payload = https.getString();
 
-      if (subpage == "login") {
+      if (subpage == "login" && httpCode == 200) {
         JsonDocument doc;
         deserializeJson(doc, payload);
         cookie = (const char*)doc["token"];

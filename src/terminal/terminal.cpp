@@ -92,7 +92,10 @@ void Terminal::process() {
     buzzer(true);
     mcp.statusLed(LEDG);
   } else {
-    lcd.print(0, 2, "Sprobuj ponownie");
+    if (requestAnswer.statusCode == 401)
+      lcd.print(0, 2, "Niepoprawna karta");
+    
+    lcd.print(0, 3, "Sprobuj ponownie");
 
     buzzer(false);
     mcp.statusLed(LEDR);
