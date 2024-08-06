@@ -15,11 +15,12 @@
 #include "terminal/terminal.hpp"
 
 class MockNetworking : public INetworking {
- public:
-  MOCK_METHOD(void, init, (), (override));
-  MOCK_METHOD(requestAnswer, request, (std::string subpage, std::string data),
-              (override));
+public:
+    MOCK_METHOD(void, init, (), (override));
+    MOCK_METHOD(requestAnswer, request, (std::string subpage, std::string data), (override));
+    MOCK_METHOD(std::string, getIp, (), (override));  // Add this line
 };
+
 
 class MockScanner : public IScanner {
  public:
