@@ -125,14 +125,14 @@ void Terminal::process() {
   serializeJson(doc, serializedDoc);
   doc.clear();
 
-  requestAnswer = net.request("document/getByNumber", serializedDoc);
+  requestAnswer = net.request("document/getDocumentByQrCode", serializedDoc);
   cons.print("STATUS CODE: " + std::to_string(requestAnswer.statusCode) +
              " DATA: " + requestAnswer.data);
 
   if (requestAnswer.statusCode == 200) {
     deserializeJson(doc, requestAnswer.data);
     lcd.clear();
-    lcd.print(0, 0, "Dok: " + document);
+    lcd.print(0, 0, "Dok: " + std::string((const char*)doc["number"]));
     lcd.print(0, 1,
               "Dobrych:   " + std::to_string(doc["documentPositions"][0]["quantityNetto"].as<int>()));
     lcd.print(0, 2,

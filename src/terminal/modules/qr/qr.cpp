@@ -37,7 +37,7 @@ ScanAnswer Qr::scan() {
     if (Serial2.available()) {
       while (Serial2.available()) {
         char input = Serial2.read();
-        if (input != 13 && (isDigit(input) || input == '/' || isAlpha(input))) {
+        if (input != 13 && (isDigit(input) || strchr("/-.", input) || isAlpha(input))) {
           fullScan += input;
         } else if (input == 13) {
           Serial2.write("RDC000");
