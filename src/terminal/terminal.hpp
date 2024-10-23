@@ -13,6 +13,7 @@
 
 #if defined(esp32)
 #include <Wire.h>
+#include <ArduinoOTA.h>
 #elif defined(utest)
 #include "interfaces/FakeArduino.hpp"
 EspClass ESP;

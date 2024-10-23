@@ -29,6 +29,14 @@ void Reset(void* pvParameters) {
   esp->restart();
 }
 
+#if defined(esp32)
+[[noreturn]] void OTA(void *pvParameters) {
+    while (true) {
+        ArduinoOTA.handle();
+    }
+}
+#endif
+
 void Terminal::buzzer(bool state) {
   if (state) {
     tone(BUZZER, 100, 100);
@@ -42,27 +50,33 @@ void Terminal::buzzer(bool state) {
 }
 
 void Terminal::init() {
-  net.init();
   Wire.begin();
   ledcSetup(0, 5000, 8);
   ledcAttachPin(BUZZER, 0);
   cons.print("CONNECTED DEVICES: " + std::to_string(scan.scan()));
+  net.initOTA();
+  lcd.init();
+  lcd.print(0, 0, "Inicjalizacja");
   key.init();
   mcp.init();
-  lcd.init();
   nfc.init();
   qr.init();
+  net.init(&lcd, &mcp);
 
   void* params[5] = {this, &mcp, &cons, &lcd, &ESP};
   xTaskCreatePinnedToCore(Reset, "Reset", 10000, params, 1, nullptr, 1);
+  xTaskCreatePinnedToCore(OTA, "OTA", 4096, nullptr, 1, nullptr, 1);
 
   buzzer(true);
   cons.print("DEVICES INITIALIZED");
 }
 
 void Terminal::process() {
+  std::string ipAddr = net.getIp();
+
   lcd.print(0, 0, "Zaloguj sie");
   lcd.print(0, 1, "Uzyj swojej karty");
+  lcd.print(0, 3, "IP: " + ipAddr);
 
   // NFC
   mcp.statusLed(LEDG);
@@ -71,7 +85,7 @@ void Terminal::process() {
   mcp.statusLed(LEDB);
 
   doc["hash"] = nfcTag;
-  doc["ipAddress"] = net.getIp();
+  doc["ipAddress"] = ipAddr;
   std::string serializedNfc;
   serializeJson(doc, serializedNfc);
   doc.clear();
@@ -94,7 +108,8 @@ void Terminal::process() {
   } else {
     if (requestAnswer.statusCode == 401)
       lcd.print(0, 2, "Niepoprawna karta");
-    
+
+    lcd.clearLine(3);
     lcd.print(0, 3, "Sprobuj ponownie");
 
     buzzer(false);
@@ -125,7 +140,7 @@ void Terminal::process() {
   serializeJson(doc, serializedDoc);
   doc.clear();
 
-  requestAnswer = net.request("document/getDocumentByQrCode", serializedDoc);
+  requestAnswer = net.request("document/terminal/getKwit", serializedDoc);
   cons.print("STATUS CODE: " + std::to_string(requestAnswer.statusCode) +
              " DATA: " + requestAnswer.data);
 
@@ -165,7 +180,7 @@ void Terminal::process() {
       mcp.statusLed(LEDR);
       lcd.clear();
       lcd.print(0, 2, "Przekroczono czas");
-      auto response = net.request("document/closeDocument/" + documentId, "");
+      auto response = net.request("document/terminal/closeKwit/" + documentId, "");
       cons.print("STATUS CODE: " + std::to_string(response.statusCode) +
                  " DATA: " + response.data);
       return;
@@ -178,7 +193,7 @@ void Terminal::process() {
     if (button.pole == "KoniecKwita") {
       lcd.clear();
       lcd.print(0, 3, "Koniec kwita");
-      auto response = net.request("document/closeDocument/" + documentId, "");
+      auto response = net.request("document/terminal/closeKwit/" + documentId, "");
       cons.print("STATUS CODE: " + std::to_string(response.statusCode) +
                  " DATA: " + response.data);
       buzzer(true);
@@ -215,7 +230,7 @@ void Terminal::process() {
     serializeJson(doc, serializedBtn);
     doc.clear();
 
-    requestAnswer = net.request("document/updateDocumentPositionOnKwit/" + documentId, serializedBtn);
+    requestAnswer = net.request("document/terminal/updateKwit/" + documentId, serializedBtn);
     cons.print("STATUS CODE: " + std::to_string(requestAnswer.statusCode) +
                " DATA: " + requestAnswer.data);
     if (requestAnswer.statusCode == 200) {
