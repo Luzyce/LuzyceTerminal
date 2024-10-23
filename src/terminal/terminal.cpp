@@ -54,7 +54,12 @@ void Terminal::init() {
   ledcSetup(0, 5000, 8);
   ledcAttachPin(BUZZER, 0);
   cons.print("CONNECTED DEVICES: " + std::to_string(scan.scan()));
+
   net.initOTA();
+  void* params[5] = {this, &mcp, &cons, &lcd, &ESP};
+  xTaskCreatePinnedToCore(Reset, "Reset", 10000, params, 1, nullptr, 1);
+  xTaskCreatePinnedToCore(OTA, "OTA", 4096, nullptr, 1, nullptr, 1);
+
   lcd.init();
   lcd.print(0, 0, "Inicjalizacja");
   key.init();
@@ -63,9 +68,6 @@ void Terminal::init() {
   qr.init();
   net.init(&lcd, &mcp);
 
-  void* params[5] = {this, &mcp, &cons, &lcd, &ESP};
-  xTaskCreatePinnedToCore(Reset, "Reset", 10000, params, 1, nullptr, 1);
-  xTaskCreatePinnedToCore(OTA, "OTA", 4096, nullptr, 1, nullptr, 1);
 
   buzzer(true);
   cons.print("DEVICES INITIALIZED");
