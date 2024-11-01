@@ -57,7 +57,7 @@ void Networking::initOTA()
 
 requestAnswer Networking::request(std::string subpage, std::string data) {
   client->setInsecure();
-  auto url = "https://phsapp.getin.ovh/api/" + String(subpage.c_str());
+  auto url = "https://app-phs.cloudsolutions.ovh/api/" + String(subpage.c_str());
 
   Serial.println("Request: " + url);
 

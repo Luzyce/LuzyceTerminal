@@ -1,6 +1,7 @@
 #pragma once
 
 #include <ArduinoJson.h>
+#include <map>
 
 #include "interfaces/IConsole.hpp"
 #include "interfaces/IKeypad.hpp"
@@ -39,6 +40,7 @@ class Terminal {
  public:
   Terminal(INetworking& net, IScanner& scan, IKeypad& key, IMcp& mcp, ILcd& lcd,
            INfc& nfc, IQr& qr, IConsole& cons);
+  static std::string refactorPolishToEnglish(const std::string& input);
   static void buzzer(bool state);
   void init();
   void process();

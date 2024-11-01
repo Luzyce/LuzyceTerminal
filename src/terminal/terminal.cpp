@@ -49,25 +49,48 @@ void Terminal::buzzer(bool state) {
   }
 }
 
+std::string Terminal::refactorPolishToEnglish(const std::string& input) {
+  std::string output = input;
+
+  const std::map<std::string, std::string> polishToEnglish = {
+    {"ą", "a"}, {"ć", "c"}, {"ę", "e"}, {"ł", "l"}, {"ń", "n"},
+    {"ó", "o"}, {"ś", "s"}, {"ź", "z"}, {"ż", "z"},
+    {"Ą", "A"}, {"Ć", "C"}, {"Ę", "E"}, {"Ł", "L"}, {"Ń", "N"},
+    {"Ó", "O"}, {"Ś", "S"}, {"Ź", "Z"}, {"Ż", "Z"}
+  };
+
+  for (const auto & it : polishToEnglish) {
+    const std::string& polishChar = it.first;
+    const std::string& englishChar = it.second;
+
+    size_t pos = 0;
+    while ((pos = output.find(polishChar, pos)) != std::string::npos) {
+      output.replace(pos, polishChar.length(), englishChar);
+      pos += englishChar.length();
+    }
+  }
+
+  return output;
+}
+
 void Terminal::init() {
   Wire.begin();
   ledcSetup(0, 5000, 8);
   ledcAttachPin(BUZZER, 0);
   cons.print("CONNECTED DEVICES: " + std::to_string(scan.scan()));
 
+  mcp.init();
+  lcd.init();
+  lcd.print(0, 0, "Inicjalizacja");
+  net.init(&lcd, &mcp);
   net.initOTA();
   void* params[5] = {this, &mcp, &cons, &lcd, &ESP};
   xTaskCreatePinnedToCore(Reset, "Reset", 10000, params, 1, nullptr, 1);
   xTaskCreatePinnedToCore(OTA, "OTA", 4096, nullptr, 1, nullptr, 1);
 
-  lcd.init();
-  lcd.print(0, 0, "Inicjalizacja");
   key.init();
-  mcp.init();
   nfc.init();
   qr.init();
-  net.init(&lcd, &mcp);
-
 
   buzzer(true);
   cons.print("DEVICES INITIALIZED");
@@ -153,9 +176,9 @@ void Terminal::process() {
     lcd.print(0, 1,
               "Dobrych:   " + std::to_string(doc["documentPositions"][0]["quantityNetto"].as<int>()));
     lcd.print(0, 2,
-              "Zlych:     " + std::to_string(doc["documentPositions"][0]["quantityLoss"].as<int>()));
+              "Braki:     " + std::to_string(doc["documentPositions"][0]["quantityLoss"].as<int>()));
     lcd.print(0, 3,
-              "DoPoprawy: " + std::to_string(doc["documentPositions"][0]["quantityToImprove"].as<int>()));
+              "Do Sprawdzenia: " + std::to_string(doc["documentPositions"][0]["quantityToImprove"].as<int>()));
     documentId = std::to_string(doc["id"].as<int>());
     doc.clear();
 
@@ -194,7 +217,7 @@ void Terminal::process() {
 
     if (button.pole == "KoniecKwita") {
       lcd.clear();
-      lcd.print(0, 3, "Koniec kwita");
+      lcd.print(0, 3, "Koniec kwitu");
       auto response = net.request("document/terminal/closeKwit/" + documentId, "");
       cons.print("STATUS CODE: " + std::to_string(response.statusCode) +
                  " DATA: " + response.data);
@@ -206,6 +229,7 @@ void Terminal::process() {
       lcd.print(0, 0, "Kod Bledu: ");
       char codeCharacter;
       std::string fullCode;
+      bool isCodeExist = false;
       while (true) {
         buzzer(true);
         mcp.statusLed(LEDG);
@@ -216,10 +240,35 @@ void Terminal::process() {
         if (std::isdigit(codeCharacter) && fullCode.size() < 2) {
           fullCode += codeCharacter;
           lcd.print(10 + fullCode.length(), 0, std::string(1, codeCharacter));
-        } else if (codeCharacter == '*' && !fullCode.empty()) {
+
+          if (fullCode.size() == 2)
+          {
+            doc["errorCode"] = fullCode;
+            serializeJson(doc, serializedDoc);
+            doc.clear();
+            auto resp = net.request("document/terminal/getError", serializedDoc);
+            if (resp.statusCode == 200)
+            {
+              isCodeExist = true;
+              lcd.clearLine(0);
+              lcd.print(0, 0, fullCode + " (" + refactorPolishToEnglish(resp.data) + ")");
+              doc.clear();
+            }
+            else
+            {
+              isCodeExist = false;
+              lcd.print(0, 0, fullCode + " (KOD NIEZNANY)");
+            }
+          }
+        } else if (codeCharacter == '*' && fullCode.size() == 1)
+        {
           fullCode.pop_back();
-          lcd.print(11 + fullCode.length(), 0, " ");
-        } else if (codeCharacter == '#' && fullCode.size() == 2) {
+          lcd.print(11, 0, " ");
+        } else if (codeCharacter == '*' && fullCode.size() == 2) {
+          lcd.clearLine(0);
+          fullCode.pop_back();
+          lcd.print(0, 0, "Kod Bledu: " + fullCode);
+        } else if (codeCharacter == '#' && fullCode.size() == 2 && isCodeExist) {
           doc["errorCode"] = fullCode;
           break;
         }
@@ -241,9 +290,9 @@ void Terminal::process() {
       lcd.print(0, 1,
                 "Dobrych:   " + std::to_string(doc["quantityNetto"].as<int>()));
       lcd.print(0, 2,
-                "Zlych:     " + std::to_string(doc["quantityLoss"].as<int>()));
+                "Braki:     " + std::to_string(doc["quantityLoss"].as<int>()));
       lcd.print(0, 3,
-                "DoPoprawy: " + std::to_string(doc["quantityToImprove"].as<int>()));
+                "Do Sprawdzenia: " + std::to_string(doc["quantityToImprove"].as<int>()));
 
       doc.clear();
       buzzer(true);
