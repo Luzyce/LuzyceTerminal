@@ -225,8 +225,9 @@ void Terminal::process() {
       mcp.statusLed(LEDG);
       return;
     } else if (button.type == '+' && button.pole == "Zlych") {
-      lcd.clearLine(0);
-      lcd.print(0, 0, "Kod Bledu: ");
+      lcd.clear();
+      lcd.print(0, 0, "Podaj kod bledu");
+      lcd.print(0, 1, "Kod Bledu: ");
       char codeCharacter;
       std::string fullCode;
       bool isCodeExist = false;
@@ -239,7 +240,7 @@ void Terminal::process() {
 
         if (std::isdigit(codeCharacter) && fullCode.size() < 2) {
           fullCode += codeCharacter;
-          lcd.print(10 + fullCode.length(), 0, std::string(1, codeCharacter));
+          lcd.print(10 + fullCode.length(), 1, std::string(1, codeCharacter));
 
           if (fullCode.size() == 2)
           {
@@ -250,24 +251,38 @@ void Terminal::process() {
             if (resp.statusCode == 200)
             {
               isCodeExist = true;
-              lcd.clearLine(0);
-              lcd.print(0, 0, fullCode + " (" + refactorPolishToEnglish(resp.data) + ")");
+              lcd.clearLine(2);
+
+              std::string textToDisplay = refactorPolishToEnglish(resp.data);
+
+              if (textToDisplay.length() > 20) {
+                lcd.print(0, 2, textToDisplay.substr(0, 20));
+                delay(300);
+
+                lcd.clearLine(2);
+                lcd.clearLine(3);
+                lcd.print(0, 2, textToDisplay.substr(0, 20));
+              } else {
+                lcd.print(0, 2, textToDisplay);
+              }
+
               doc.clear();
             }
             else
             {
               isCodeExist = false;
-              lcd.print(0, 0, fullCode + " (KOD NIEZNANY)");
+              lcd.print(0, 2, "KOD NIEZNANY");
             }
           }
         } else if (codeCharacter == '*' && fullCode.size() == 1)
         {
           fullCode.pop_back();
-          lcd.print(11, 0, " ");
-        } else if (codeCharacter == '*' && fullCode.size() == 2) {
-          lcd.clearLine(0);
+          lcd.print(11, 1, " ");
+        } else if (codeCharacter == '*' && fullCode.size() == 2)
+        {
+          lcd.clearLine(2);
           fullCode.pop_back();
-          lcd.print(0, 0, "Kod Bledu: " + fullCode);
+          lcd.print(12, 1, " ");
         } else if (codeCharacter == '#' && fullCode.size() == 2 && isCodeExist) {
           doc["errorCode"] = fullCode;
           break;
