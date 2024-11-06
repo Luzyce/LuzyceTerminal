@@ -3,7 +3,7 @@
 #include <Arduino.h>
 #include <Wire.h>
 
-#include "../../interfaces/iScanner.hpp"
+#include "../../interfaces/IScanner.hpp"
 
 class Scanner : public IScanner {
   byte error, address;
