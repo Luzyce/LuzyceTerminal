@@ -15,16 +15,6 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v3
 
-      - name: Install Python3
-        run: |
-          sudo apt update
-          sudo apt install -y python3 python3-pip
-
-      - name: Install PlatformIO
-        run: |
-          curl -fsSL -o get-platformio.py https://raw.githubusercontent.com/platformio/platformio-core-installer/master/get-platformio.py
-          python3 get-platformio.py
-
       - name: Request IPs from API
         id: get_ips
         run: |
@@ -43,7 +33,7 @@ jobs:
             echo "Pinging IP: $ip"
             if ping -c 1 $ip &> /dev/null; then
               echo "IP $ip is reachable. Uploading..."
-              pio upload -e esp32OTA --upload-port $ip || echo "Upload to $ip failed."
+              su luzyce pio upload -e esp32OTA --upload-port $ip || echo "Upload to $ip failed."
             else
               echo "IP $ip is not reachable. Skipping."
             fi
