@@ -1,0 +1,42 @@
+name: Deploy to ESP32
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy-esp32:
+    runs-on: self-hosted
+    name: Ping and Deploy to ESP32 Devices
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Request IPs from API
+        id: get_ips
+        run: |
+          response=$(curl -s "${{ secrets.API_URL }}/api/workflow/getIps")
+          echo "IPs=$response" >> $GITHUB_ENV
+
+      - name: Process IP list
+        id: process_ips
+        run: |
+          ips=${{ env.IPs }}
+          echo "Received IPs: $ips"
+
+          IFS=',' read -r -a ip_array <<< "${ips//[\[\]\"\ ]/}"
+
+          for ip in "${ip_array[@]}"; do
+            echo "Pinging IP: $ip"
+            if ping -c 1 $ip &> /dev/null; then
+              echo "IP $ip is reachable. Uploading..."
+              pio upload -e esp32OTA --upload-port $ip || echo "Upload to $ip failed."
+            else
+              echo "IP $ip is not reachable. Skipping."
+            fi
+          done
+
+    env:
+      API_URL: ${{ secrets.API_URL }}
