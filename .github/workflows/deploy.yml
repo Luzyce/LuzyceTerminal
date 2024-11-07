@@ -8,6 +8,7 @@ on:
 jobs:
   deploy-esp32:
     runs-on: self-hosted
+    environment: Develop
     name: Ping and Deploy to ESP32 Devices
 
     steps:
