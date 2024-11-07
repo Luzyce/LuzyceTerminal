@@ -33,7 +33,7 @@ jobs:
             echo "Pinging IP: $ip"
             if ping -c 1 $ip &> /dev/null; then
               echo "IP $ip is reachable. Uploading..."
-              runuser -l luzyce 'pio upload -e esp32OTA --upload-port $ip'
+              sudo -u luzyce pio upload -e esp32OTA --upload-port $ip
             else
               echo "IP $ip is not reachable. Skipping."
             fi
