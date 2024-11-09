@@ -176,10 +176,10 @@ void Terminal::process() {
     lcd.print(0, 1,
               "Dobrych:   " + std::to_string(doc["documentPositions"][0]["quantityNetto"].as<int>()));
     lcd.print(0, 2,
-              "Braki:     " + std::to_string(doc["documentPositions"][0]["quantityLoss"].as<int>()));
-    lcd.print(0, 3,
               "Do Sprawdzenia: " + std::to_string(doc["documentPositions"][0]["quantityToImprove"].as<int>()));
     documentId = std::to_string(doc["id"].as<int>());
+    lcd.print(0, 3,
+              "Braki:     " + std::to_string(doc["documentPositions"][0]["quantityLoss"].as<int>()));
     doc.clear();
 
     buzzer(true);
@@ -205,9 +205,6 @@ void Terminal::process() {
       mcp.statusLed(LEDR);
       lcd.clear();
       lcd.print(0, 2, "Przekroczono czas");
-      auto response = net.request("document/terminal/closeKwit/" + documentId, "");
-      cons.print("STATUS CODE: " + std::to_string(response.statusCode) +
-                 " DATA: " + response.data);
       return;
     }
 
@@ -305,9 +302,9 @@ void Terminal::process() {
       lcd.print(0, 1,
                 "Dobrych:   " + std::to_string(doc["quantityNetto"].as<int>()));
       lcd.print(0, 2,
-                "Braki:     " + std::to_string(doc["quantityLoss"].as<int>()));
-      lcd.print(0, 3,
                 "Do Sprawdzenia: " + std::to_string(doc["quantityToImprove"].as<int>()));
+      lcd.print(0, 3,
+                "Braki:     " + std::to_string(doc["quantityLoss"].as<int>()));
 
       doc.clear();
       buzzer(true);

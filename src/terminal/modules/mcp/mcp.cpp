@@ -16,7 +16,7 @@ void Mcp::statusLed(int led) {
 }
 
 readBtnAnswer Mcp::readBtn() {
-  int64_t timeForTimeout = (esp_timer_get_time() / 1000ULL) + 30000;
+  int64_t timeForTimeout = (esp_timer_get_time() / 1000ULL) + 3600000;
   while (true) {
     int64_t currentMillis = (esp_timer_get_time() / 1000ULL);
     if (currentMillis >= timeForTimeout) {
