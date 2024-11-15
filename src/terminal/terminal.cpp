@@ -12,12 +12,12 @@ Terminal::Terminal(INetworking& net, IScanner& scan, IKeypad& key, IMcp& mcp,
       cons(cons) {}
 
 void Reset(void* pvParameters) {
-  auto* mcp = static_cast<IMcp*>(reinterpret_cast<void**>(pvParameters)[1]);
+  auto* mcp = static_cast<IMcp*>(static_cast<void**>(pvParameters)[1]);
   auto* cons =
-      static_cast<IConsole*>(reinterpret_cast<void**>(pvParameters)[2]);
-  auto* lcd = static_cast<ILcd*>(reinterpret_cast<void**>(pvParameters)[3]);
+      static_cast<IConsole*>(static_cast<void**>(pvParameters)[2]);
+  auto* lcd = static_cast<ILcd*>(static_cast<void**>(pvParameters)[3]);
   auto* esp =
-      static_cast<EspClass*>(reinterpret_cast<void**>(pvParameters)[4]);
+      static_cast<EspClass*>(static_cast<void**>(pvParameters)[4]);
 
   mcp->resetBtn();
   lcd->clear();
@@ -99,6 +99,7 @@ void Terminal::init() {
 void Terminal::process() {
   std::string ipAddr = net.getIp();
 
+  lcd.clearLine(0);
   lcd.print(0, 0, "Zaloguj sie");
   lcd.print(0, 1, "Uzyj swojej karty");
   lcd.print(0, 3, "IP: " + ipAddr);
@@ -121,7 +122,7 @@ void Terminal::process() {
 
   if (requestAnswer.statusCode == 200) {
     deserializeJson(doc, requestAnswer.data);
-    std::string displayName = std::string((const char*)doc["result"]["name"]) + " " + std::string((const char*)doc["result"]["lastName"]);
+    std::string displayName = std::string(static_cast<const char*>(doc["result"]["name"])) + " " + std::string(static_cast<const char*>(doc["result"]["lastName"]));
     doc.clear();
 
     lcd.clear();
@@ -172,7 +173,7 @@ void Terminal::process() {
   if (requestAnswer.statusCode == 200) {
     deserializeJson(doc, requestAnswer.data);
     lcd.clear();
-    lcd.print(0, 0, "Dok: " + std::string((const char*)doc["number"]));
+    lcd.print(0, 0, "Dok: " + std::string(static_cast<const char*>(doc["number"])));
     lcd.print(0, 1,
               "Dobrych:   " + std::to_string(doc["documentPositions"][0]["quantityNetto"].as<int>()));
     lcd.print(0, 2,

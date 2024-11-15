@@ -9,8 +9,9 @@
 #include "terminal/modules/qr/qr.hpp"
 #include "terminal/modules/scanner/scanner.hpp"
 #include "terminal/terminal.hpp"
+#include "config.hpp"
 
-Networking net;
+Networking net(SERVER_ADDRESS);
 Scanner scan;
 MatrixKeypad key;
 Console cons;

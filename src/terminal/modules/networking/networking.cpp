@@ -1,5 +1,7 @@
 #include "networking.hpp"
 
+Networking::Networking(std::string ipAddr) : ipAddr(std::move(ipAddr)) {}
+
 void Networking::configModeCallback(WiFiManager *wm)
 {
   if (mcp == nullptr || lcd == nullptr) {
@@ -57,7 +59,7 @@ void Networking::initOTA()
 
 requestAnswer Networking::request(std::string subpage, std::string data) {
   client->setInsecure();
-  auto url = "https://app-phs.cloudsolutions.ovh/api/" + String(subpage.c_str());
+  const auto url = ipAddr.c_str() + String(subpage.c_str());
 
   Serial.println("Request: " + url);
 

@@ -15,14 +15,16 @@ class Networking : public INetworking {
   WiFiClientSecure *client = new WiFiClientSecure;
   HTTPClient https;
   WiFiManager wm;
-  bool res;
+  bool res = false;
   std::string cookie;
+  std::string ipAddr;
   void configModeCallback(WiFiManager *wm);
 
   ILcd* lcd = nullptr;
   IMcp* mcp = nullptr;
 
  public:
+  explicit Networking(std::string ipAddr);
   std::string getIp() override;
   void init(ILcd* lcd, IMcp* mcp) override;
   void initOTA() override;
