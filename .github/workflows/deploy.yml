@@ -17,7 +17,7 @@ jobs:
 
       - name: Generate config.hpp
         run: |
-          echo $CONF_FILE > src/config.hpp
+          echo $CONF_FILE | base64 -d > src/config.hpp
           echo "Generated src/config.hpp with CONF_FILE content."
           cat src/config.hpp
 
