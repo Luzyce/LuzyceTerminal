@@ -19,6 +19,7 @@ jobs:
         run: |
           echo -e "${{ secrets.CONF_FILE }}" > src/config.hpp
           echo "Generated src/config.hpp with CONF_FILE content."
+          cat src/config.hpp
 
       - name: Request IPs from API
         id: get_ips
