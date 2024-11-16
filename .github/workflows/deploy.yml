@@ -17,7 +17,7 @@ jobs:
 
       - name: Generate config.hpp
         run: |
-          echo -e "${{ secrets.CONF_FILE }}" > src/config.hpp
+          echo -e "${{ variables.CONF_FILE }}" > src/config.hpp
           echo "Generated src/config.hpp with CONF_FILE content."
           cat src/config.hpp
 
