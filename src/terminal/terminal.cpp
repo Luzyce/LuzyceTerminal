@@ -222,7 +222,52 @@ void Terminal::process() {
       buzzer(true);
       mcp.statusLed(LEDG);
       return;
-    } else if (button.type == '+' && button.pole == "Zlych") {
+    }
+
+    std::string fullQuantity = "1";
+
+    if (button.type == '+') {
+      lcd.clear();
+      lcd.print(0, 0, "Podaj ilosc");
+      lcd.print(0, 1, "Ilosc: 1");
+      char character;
+      while (true) {
+        mcp.statusLed(LEDG);
+        character = key.read();
+        cons.print(std::string(1, character));
+        mcp.statusLed(LEDB);
+
+        if (fullQuantity == "1" && isdigit(character) && character > 0)
+        {
+          fullQuantity = "";
+        }
+
+        if (isdigit(character))
+        {
+          fullQuantity += character;
+        }
+
+        if (fullQuantity == "0" || (character == '*' && fullQuantity.size() == 1))
+        {
+          fullQuantity = "1";
+        }
+
+        if (character == '*' && fullQuantity.size() > 1)
+        {
+          fullQuantity.pop_back();
+          lcd.print(7 + fullQuantity.length(), 1, " ");
+        }
+
+        lcd.print(7, 1, fullQuantity);
+
+        if (character == '#' && !fullQuantity.empty())
+        {
+          break;
+        }
+      }
+    }
+
+    if (button.type == '+' && button.pole == "Zlych") {
       lcd.clear();
       lcd.print(0, 0, "Podaj kod bledu");
       lcd.print(0, 1, "Kod Bledu: ");
@@ -290,6 +335,7 @@ void Terminal::process() {
 
     doc["type"] = std::string(1, button.type);
     doc["field"] = button.pole;
+    doc["quantity"] = std::stoi(fullQuantity);
     std::string serializedBtn;
     serializeJson(doc, serializedBtn);
     doc.clear();
@@ -319,6 +365,6 @@ void Terminal::process() {
       mcp.statusLed(LEDG);
       lcd.clearLine(0);
     }
-  
+
   }
 }
