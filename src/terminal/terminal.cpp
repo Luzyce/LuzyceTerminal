@@ -247,7 +247,7 @@ void Terminal::process() {
           fullQuantity += character;
         }
 
-        if (fullQuantity == "0" || (character == '*' && fullQuantity.size() == 1))
+        if (character == '*' && fullQuantity.size() == 1)
         {
           fullQuantity = "1";
         }
