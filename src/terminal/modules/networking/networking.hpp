@@ -12,8 +12,7 @@
 #include "terminal/interfaces/IMcp.hpp"
 
 class Networking : public INetworking {
-  WiFiClientSecure *client = new WiFiClientSecure;
-  HTTPClient https;
+  HTTPClient http;
   WiFiManager wm;
   bool res = false;
   std::string cookie;

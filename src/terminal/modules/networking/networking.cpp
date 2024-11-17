@@ -58,18 +58,18 @@ void Networking::initOTA()
 }
 
 requestAnswer Networking::request(std::string subpage, std::string data) {
-  client->setInsecure();
   const auto url = ipAddr.c_str() + String(subpage.c_str());
 
   Serial.println("Request: " + url);
 
-  if (https.begin(*client, url)) {
-    https.addHeader("Content-Type", "application/json");
+  if (http.begin(url)) {
+    http.setTimeout(15000);
+    http.addHeader("Content-Type", "application/json");
     if (subpage == "login") {
       cookie = "";
       Serial.println("No cookie");
     } else {
-      https.addHeader("Authorization", "Bearer " + String(cookie.c_str()));
+      http.addHeader("Authorization", "Bearer " + String(cookie.c_str()));
       Serial.println("Authorization:" + String(cookie.c_str()));
     }
 
@@ -77,19 +77,19 @@ requestAnswer Networking::request(std::string subpage, std::string data) {
 
     int httpCode;
     if (data == "") {
-      httpCode = https.GET();
+      httpCode = http.GET();
       Serial.println("GET");
     } else if (subpage.find("updateKwit") != std::string::npos) {
-      httpCode = https.PUT(data.c_str());
+      httpCode = http.PUT(data.c_str());
       Serial.println("PUT");
     } else {
-      httpCode = https.POST(String(data.c_str()));
+      httpCode = http.POST(String(data.c_str()));
       Serial.println("POST");
     }
-    
+
     if (httpCode > 0) {
       Serial.println("HTTP Status Code: " + String(httpCode));
-      String payload = https.getString();
+      String payload = http.getString();
 
       if (subpage == "login" && httpCode == 200) {
         JsonDocument doc;
@@ -102,10 +102,10 @@ requestAnswer Networking::request(std::string subpage, std::string data) {
       answer.statusCode = httpCode;
       answer.data = payload.c_str();
 
-      https.end();
+      http.end();
       return answer;
     } else {
-      https.end();
+      http.end();
       Serial.println("Error on HTTP request: " + String(httpCode));
     }
   }
