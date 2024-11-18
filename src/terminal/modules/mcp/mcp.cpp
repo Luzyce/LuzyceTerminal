@@ -19,9 +19,7 @@ readBtnAnswer Mcp::readBtn() {
   int64_t timeForTimeout = (esp_timer_get_time() / 1000ULL) + 3600000;
   while (true) {
     int64_t currentMillis = (esp_timer_get_time() / 1000ULL);
-    if (currentMillis >= timeForTimeout) {
-      Serial2.write("RDC000");
-
+    if (currentMillis > timeForTimeout) {
       answer.status = 1;
       answer.pole = "";
       answer.type = '/';
@@ -60,13 +58,60 @@ readBtnAnswer Mcp::readBtn() {
           case 6:
             answer.pole = "KoniecKwita";
             break;
-          deafult:
+          default:
             break;
         }
+        answer.status = 0;
         return answer;
       }
     }
   }
+}
+
+readBtnAnswer Mcp::singleReadBtn() {
+  answer.status = 1;
+  answer.pole = "";
+  answer.type = '/';
+
+  for (uint8_t btn = 0; btn < 7; btn++) {
+    if (!mcp.digitalRead(btn)) {
+      while (!mcp.digitalRead(btn))
+        delay(30);
+      switch (btn) {
+        case 0:
+          answer.type = '-';
+          answer.pole = "Zlych";
+          break;
+        case 1:
+          answer.type = '+';
+          answer.pole = "Zlych";
+          break;
+        case 2:
+          answer.type = '-';
+          answer.pole = "DoPoprawy";
+          break;
+        case 3:
+          answer.type = '+';
+          answer.pole = "DoPoprawy";
+          break;
+        case 4:
+          answer.type = '-';
+          answer.pole = "Dobrych";
+          break;
+        case 5:
+          answer.type = '+';
+          answer.pole = "Dobrych";
+          break;
+        case 6:
+          answer.pole = "KoniecKwita";
+          break;
+        deafult:
+          break;
+      }
+      return answer;
+    }
+  }
+  return answer;
 }
 
 void Mcp::resetBtn() {

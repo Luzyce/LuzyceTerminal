@@ -225,45 +225,55 @@ void Terminal::process() {
     }
 
     std::string fullQuantity = "1";
+    bool isDefaultQuantity = true;
 
     if (button.type == '+') {
       lcd.clear();
       lcd.print(0, 0, "Podaj ilosc");
       lcd.print(0, 1, "Ilosc: 1");
-      char character;
+      lcd.print(0, 3, "Ilosc jest domyslna");
+      char character = '/';
+
       while (true) {
         mcp.statusLed(LEDG);
-        character = key.read();
+        while (character == '/') {
+          character = key.singleRead();
+          auto mcpResp = mcp.singleReadBtn();
+          if (mcpResp.type == '+' && mcpResp.pole == button.pole)
+          {
+            character = '#';
+          }
+        }
         cons.print(std::string(1, character));
         mcp.statusLed(LEDB);
 
-        if (fullQuantity == "1" && isdigit(character) && character > 0)
-        {
+        if (fullQuantity == "1" && isdigit(character) && character != '0' && isDefaultQuantity) {
           fullQuantity = "";
+          isDefaultQuantity = false;
+          lcd.clearLine(3);
         }
 
-        if (isdigit(character))
-        {
+        if (isdigit(character)) {
           fullQuantity += character;
         }
 
-        if (character == '*' && fullQuantity.size() == 1)
-        {
-          fullQuantity = "1";
+        if (character == '*') {
+          if (fullQuantity.size() == 1) {
+            fullQuantity = "1";
+            isDefaultQuantity = true;
+            lcd.print(0, 3, "Ilosc jest domyslna");
+          } else if (fullQuantity.size() > 1) {
+            fullQuantity.pop_back();
+            lcd.print(7 + fullQuantity.length(), 1, " ");
+          }
         }
 
-        if (character == '*' && fullQuantity.size() > 1)
-        {
-          fullQuantity.pop_back();
-          lcd.print(7 + fullQuantity.length(), 1, " ");
-        }
-
-        lcd.print(7, 1, fullQuantity);
-
-        if (character == '#' && !fullQuantity.empty())
-        {
+        if (character == '#' && !fullQuantity.empty()) {
           break;
         }
+
+        character = '/';
+        lcd.print(7, 1, fullQuantity);
       }
     }
 

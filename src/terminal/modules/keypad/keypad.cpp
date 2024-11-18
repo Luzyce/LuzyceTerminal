@@ -19,3 +19,16 @@ char MatrixKeypad::read() {
     }
   }
 }
+
+char MatrixKeypad::singleRead() {
+  char key = keypad.getKey();
+
+  if (key) {
+    while (keypad.getKey()) {
+      delay(30);
+    }
+    return key;
+  }
+
+  return '/';
+}
