@@ -7,8 +7,8 @@ on:
 
 jobs:
   deploy-esp32:
-    runs-on: self-hosted
-    environment: Develop
+    runs-on: [self-hosted, prod]
+    environment: Prod
     name: Deploy to ESP32 Devices
 
     steps:
@@ -39,7 +39,7 @@ jobs:
             echo "Pinging IP: $ip"
             if ping -c 1 $ip &> /dev/null; then
               echo "IP $ip is reachable. Uploading..."
-              /home/luzyce/.platformio/penv/bin/pio run -t upload -e esp32OTA --upload-port $ip
+              ${{ secrets.PIO }} run -t upload -e esp32OTA --upload-port $ip
             else
               echo "IP $ip is not reachable. Skipping."
             fi
