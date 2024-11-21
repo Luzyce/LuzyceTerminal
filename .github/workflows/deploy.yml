@@ -19,7 +19,6 @@ jobs:
         run: |
           echo $CONF_FILE | base64 -d > src/config.hpp
           echo "Generated src/config.hpp with CONF_FILE content."
-          cat src/config.hpp
 
       - name: Request IPs from API
         id: get_ips
