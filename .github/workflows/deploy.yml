@@ -47,7 +47,7 @@ jobs:
                 --ip $ip \
                 --port 8081 \
                 --host_ip 0.0.0.0 \
-                --file .pio/build/esp32OTA/firmware.elf \
+                --file /home/phsapp/LuzyceTerminal/.pio/build/esp32OTA/firmware.bin  \
                 --debug --progress
             else
               echo "IP $ip is not reachable. Skipping."
