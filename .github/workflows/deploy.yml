@@ -24,13 +24,6 @@ jobs:
       - name: Build project
         run: |
           ${{ secrets.PIO }} run -e esp32OTA
-          ls
-          cd .pio
-          ls
-          cd build
-          ls
-          cd esp32OTA
-          ls
 
       - name: Request IPs from API
         id: get_ips
@@ -41,6 +34,8 @@ jobs:
       - name: Process IP list
         id: process_ips
         run: |
+          cd .pio/build/esp32OTA
+          ls
           ips=${{ env.IPs }}
           echo "Received IPs: $ips"
 
