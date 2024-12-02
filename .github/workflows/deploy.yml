@@ -21,6 +21,10 @@ jobs:
           echo "Generated src/config.hpp with CONF_FILE content."
           cat src/config.hpp
 
+      - name: Build project
+        run: |
+          ${{ secrets.PIO }} run -e esp32OTA
+
       - name: Request IPs from API
         id: get_ips
         run: |
@@ -39,7 +43,13 @@ jobs:
             echo "Pinging IP: $ip"
             if ping -c 1 $ip &> /dev/null; then
               echo "IP $ip is reachable. Uploading..."
-              ${{ secrets.PIO }} run -t upload -e esp32OTA --upload-port $ip
+              python3 /home/phsapp/.platformio/packages/framework-arduinoespressif32/tools/espota.py \
+                --ip $ip \
+                --port 8081 \
+                --host_ip 0.0.0.0 \
+                --host_port 23310 \
+                --file .pio/build/esp32OTA/firmware.elf \
+                --debug --progress
             else
               echo "IP $ip is not reachable. Skipping."
             fi
