@@ -34,7 +34,6 @@ jobs:
       - name: Process IP list
         id: process_ips
         run: |
-          ls
           ips=${{ env.IPs }}
           echo "Received IPs: $ips"
 
