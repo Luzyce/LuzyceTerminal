@@ -122,7 +122,9 @@ void Terminal::process() {
 
   if (requestAnswer.statusCode == 200) {
     deserializeJson(doc, requestAnswer.data);
-    std::string displayName = std::string(static_cast<const char*>(doc["result"]["name"])) + " " + std::string(static_cast<const char*>(doc["result"]["lastName"]));
+    std::string displayName = refactorPolishToEnglish(
+      std::string(static_cast<const char*>(doc["result"]["name"])) + " " +
+      std::string(static_cast<const char*>(doc["result"]["lastName"])));
     doc.clear();
 
     lcd.clear();
